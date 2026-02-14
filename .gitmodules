@@ -1,0 +1,6 @@
+[submodule "deps/cjson"]
+	path = deps/cjson
+	url = https://github.com/DaveGamble/cJSON.git
+[submodule "deps/imgui"]
+	path = deps/imgui
+	url = https://github.com/ocornut/imgui.git
