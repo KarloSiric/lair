@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-15 17:29:12
    Last Modified by: ksiric
-   Last Modified: 2026-02-15 19:12:56
+   Last Modified: 2026-02-15 19:16:30
    ---------------------------------------------------------------------
    Description:
        
@@ -52,26 +52,26 @@ void Net_Shutdown( void )
 lsocket Net_Socket( void )
 {
     
-    int sock;
+    int newsocket;
     
-    sock = socket( AF_INET, SOCK_STREAM, 0 );
-    if ( sock == -1 ) {
+    newsocket = socket( AF_INET, SOCK_STREAM, 0 );
+    if ( newsocket == -1 ) {
         return ( INVALID_SOCKET_HANDLE );
     }
      
-    return ( sock );
+    return ( newsocket );
     
 }
 
 
-int Net_Bind( lsocket sock, u16 port )
+int Net_Bind( lsocket newsocket, u16 port )
 {    
     
     struct sockaddr_in addr;
     
     int opt = 1;
     
-    setsockopt( sock, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof( opt ) );
+    setsockopt( newsocket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof( opt ) );
     
     memset( &addr, 0, sizeof( addr ) );
     
@@ -79,7 +79,7 @@ int Net_Bind( lsocket sock, u16 port )
     addr.sin_addr.s_addr = INADDR_ANY;
     addr.sin_port = htons( port );
     
-    if ( bind( sock, ( struct sockaddr * )&addr, sizeof( addr ) ) == -1 )
+    if ( bind( newsocket, ( struct sockaddr * )&addr, sizeof( addr ) ) == -1 )
     {
         return ( -1 );
     }
@@ -88,6 +88,20 @@ int Net_Bind( lsocket sock, u16 port )
     return ( 0 );
          
 }
+
+
+int Net_Listen( lsocket newsocket, int backlog )
+{
+    
+    if ( listen( newsocket, backlog ) == -1 )
+    {
+        return ( -1 );
+    }
+    
+    return ( 0 );
+}
+
+
 
 
 
