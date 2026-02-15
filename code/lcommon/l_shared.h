@@ -121,15 +121,84 @@ typedef enum {
 
 
 
-
-
-
 typedef enum {
     
     lfalse,
     ltrue
     
 } lboolean;
+
+
+
+/*
+==============================================================
+LIMITS
+==============================================================
+*/
+
+
+
+#define MAX_STRING_CHARS    1024
+#define MAX_USERNAME        32
+#define MAX_MESSAGE_LEN     4096
+#define MAX_ROOM_NAME       64
+#define MAX_PATH_LEN        256
+
+#define MAX_CLIENTS         256
+#define MAX_ROOMS           64
+
+#define DEFAULT_PORT        7331
+
+
+/*
+==============================================================
+UTILITY MACROS
+==============================================================
+*/
+
+
+
+#define MIN( a,b )        ( ( a ) < ( b ) ? ( a ) : ( b ))
+#define MAX( a,b )        ( ( a ) > ( b ) ? ( a ) : ( b ))
+#define CLAMP( x,lo,hi )  ( MIN( MAX( ( x ),( lo ) ),( hi ) ) )
+
+#define ARRAY_COUNT( arr )    ( sizeof( arr ) / sizeof( ( arr )[0]) )
+
+
+
+/*
+==============================================================
+SOCKET TYPE
+==============================================================
+*/
+
+typedef int lsocket;
+
+#define INVALID_SOCKET_HANDLE   (-1)
+
+
+
+/*
+==============================================================
+CONNECTION STATE
+==============================================================
+*/
+
+typedef enum {
+  CONN_DISCONNECTED,
+  CONN_CONNECTING,
+  CONN_CONNECTED,
+  CONN_AUTHENTICATED
+} connstate_t;
+
+
+
+
+/*
+==============================================================
+DATA TYPES
+==============================================================
+*/
 
 
 
