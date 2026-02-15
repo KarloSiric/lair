@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-15 12:27:04
    Last Modified by: ksiric
-   Last Modified: 2026-02-15 19:32:15
+   Last Modified: 2026-02-16 00:19:15
    ---------------------------------------------------------------------
    Description:
        
@@ -14,6 +14,7 @@
    Version: 0.1.0
  ======================================================================
                                                                        */
+
 
 
 #include "lcommon.h"
@@ -78,6 +79,7 @@ void Com_Error( lerror_t level, const char *fmt, ... )
     {
         Com_Printf( "ERROR: %s\n", buf );
     }
+     
      
 }
 
