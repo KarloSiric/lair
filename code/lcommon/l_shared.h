@@ -1,9 +1,9 @@
-                            /* LAIR TYPES HEADER - types.h */
+                            /* LAIR TYPES HEADER - l_shared.h */
 
 
 
-#ifndef __LAIR_TYPES_H__
-#define __LAIR_TYPES_H__
+#ifndef __LAIR_SHARED_H__
+#define __LAIR_SHARED_H__
 
 
 
