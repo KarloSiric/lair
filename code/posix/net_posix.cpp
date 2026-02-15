@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-15 17:29:12
    Last Modified by: ksiric
-   Last Modified: 2026-02-15 23:05:35
+   Last Modified: 2026-02-15 23:19:55
    ---------------------------------------------------------------------
    Description:
        
@@ -124,7 +124,7 @@ lsocket Net_Accept( lsocket sock )
      
     if ( ( newsocket = accept( sock, ( struct sockaddr *)&addr,  &addrlen ) ) == -1 )
     {
-        Com_Printf( "ERROR: Net_Accept: %s\n", Net_ErrorString( ) );
+        Com_Printf( "ERROR: Net_Accept: %s\n", Net_ErrorString() );
         return ( INVALID_SOCKET_HANDLE );
     }
     
@@ -163,7 +163,7 @@ int Net_Connect( lsocket sock, const char *host, u16 port )
     if ( connect( sock, ( struct sockaddr *)&addr, sizeof( addr ) ) == -1 )
     {
         
-        Com_Printf( "ERROR: Net_Connect: %s\n", Net_ErrorString( ) );
+        Com_Printf( "ERROR: Net_Connect: %s\n", Net_ErrorString() );
         return ( -1 );
     }    
     
@@ -172,6 +172,63 @@ int Net_Connect( lsocket sock, const char *host, u16 port )
 
 
 
+int Net_Send( lsocket sock, byte *buf, usize buflen )
+{
+    
+    ssize_t sent;
+    usize total = 0;
+    
+    
+    while ( total < buflen )
+    {
+        
+        sent = send( sock, buf + total, buflen - total, 0 );
+        if ( sent == -1 )
+        {
+            Com_Printf( "ERROR: Net_Send: %s\n", Net_ErrorString() );
+            return ( -1 );
+        }
+        
+        total += sent;
+    }
+    
+    return ( ( int ) total );
+     
+}
+
+
+int Net_Recv( lsocket sock, byte *buf, usize buflen )
+{
+    
+    // @Note(Karlo): Similar to send, we dont know how many are coming in, if 0 ( con closed )
+    
+    ssize_t recieved;
+    usize total = 0;
+    
+    while ( total < buflen )
+    {
+        
+        recieved = recv( sock, buf + total, buflen - total, 0 );
+        
+        if ( recieved == -1 )
+        {
+            Com_Printf( "ERROR: Net_Recv: %s\n", Net_ErrorString() );
+            return ( -1 );
+        }
+        
+        if ( recieved == 0 )
+        {
+            // Connection closed
+            return ( 0 );
+        }
+        
+        total += recieved;
+        
+    }
+    
+    return ( ( int ) total );
+    
+}
 
 
 
