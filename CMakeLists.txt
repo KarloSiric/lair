@@ -5,39 +5,61 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# Platform detection
-if(APPLE)
-    set(LAIR_PLATFORM_MACOS ON)
-    add_compile_definitions(LAIR_PLATFORM_MACOS)
-elseif(UNIX)
-    set(LAIR_PLATFORM_LINUX ON)
-    add_compile_definitions(LAIR_PLATFORM_LINUX)
-elseif(WIN32)
-    set(LAIR_PLATFORM_WINDOWS ON)
-    add_compile_definitions(LAIR_PLATFORM_WINDOWS)
-endif()
 
 # Build options
 option(LAIR_BUILD_SERVER "Build the server" ON)
 option(LAIR_BUILD_CLIENT "Build the GUI client" OFF)
 option(LAIR_BUILD_CLIENT_TUI "Build the TUI client" OFF)
 
+
+# Include paths - so we can just #include "l_shared.h"
+include_directories(code/lcommon)
+
+
 # Dependencies
 add_subdirectory(deps/cjson)
 
-# Core library
-add_subdirectory(core)
+
+# Platform library (posix or win32)
+if(WIN32)
+    add_library(lair_platform STATIC
+        code/win32/sys_win32.cpp
+        code/win32/net_win32.cpp
+    )
+    target_link_libraries(lair_platform ws2_32)
+else()
+    add_library(lair_platform STATIC
+        code/posix/sys_posix.cpp
+        code/posix/net_posix.cpp
+    )
+endif()
+
+target_include_directories(lair_platform PUBLIC code/lcommon)
+
+
+# Common library
+add_library(lair_common STATIC
+    code/lcommon/lcommon.cpp
+)
+
+target_include_directories(lair_common PUBLIC code/lcommon)
+target_link_libraries(lair_common lair_platform cjson)
+
 
 # Server
 if(LAIR_BUILD_SERVER)
-    add_subdirectory(server)
+    add_executable(lair_server
+        code/server/main.cpp
+    )
+    target_link_libraries(lair_server lair_common lair_platform)
 endif()
 
-# Clients
+
+# Clients (for later)
 if(LAIR_BUILD_CLIENT)
-    add_subdirectory(client)
+    # add_subdirectory(code/client)
 endif()
 
 if(LAIR_BUILD_CLIENT_TUI)
-    add_subdirectory(client-tui)
+    # add_subdirectory(code/client-tui)
 endif()
