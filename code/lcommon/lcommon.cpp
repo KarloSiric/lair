@@ -70,20 +70,35 @@ void Com_Error( lerror_t level, const char *fmt, ... )
     
     */
     
+    
 }
 
 
+u64 Com_Milliseconds( void )
+{
+    
+    return Sys_GetMilliseconds( );
+    
+}
 
 
+void Com_Init( void )
+{
+    
+    Sys_Init();
+    Net_Init();
+    
+    Com_Printf( "Lair: %s\n", LAIR_VERSION );
+    Com_Printf( "Platform: %s\n", CPUSTRING );
+    
+}
 
 
-
-
-
-
-
-
-
-
-
+void Com_Shutdown( void )
+{
+    
+    Net_Shutdown();
+    Sys_Shutdown();
+    
+}
 
