@@ -36,6 +36,8 @@ u64 Sys_GetMilliseconds( void );
 */
 
 
+const char *Net_ErrorString( void );
+
 void Net_Init( void );
 
 void Net_Shutdown( void );
