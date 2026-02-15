@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-15 17:29:12
    Last Modified by: ksiric
-   Last Modified: 2026-02-15 19:16:30
+   Last Modified: 2026-02-15 23:05:35
    ---------------------------------------------------------------------
    Description:
        
@@ -17,6 +17,7 @@
 
 
 
+#include "lcommon.h"
 #include "platform.h"
 
 #include <stdio.h>
@@ -28,6 +29,15 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <errno.h>
+
+
+
+const char *Net_ErrorString( void )
+{
+    
+    return strerror( errno );
+    
+}
 
 
 
@@ -81,6 +91,9 @@ int Net_Bind( lsocket newsocket, u16 port )
     
     if ( bind( newsocket, ( struct sockaddr * )&addr, sizeof( addr ) ) == -1 )
     {
+        
+        Com_Printf( "ERROR: TCP_OpenSocket: bind: %s\n", Net_ErrorString() );
+        close( newsocket );
         return ( -1 );
     }
     
@@ -100,6 +113,64 @@ int Net_Listen( lsocket newsocket, int backlog )
     
     return ( 0 );
 }
+
+
+lsocket Net_Accept( lsocket sock )
+{
+    
+    struct sockaddr_in addr;
+    socklen_t addrlen = sizeof( addr );
+    int newsocket;
+     
+    if ( ( newsocket = accept( sock, ( struct sockaddr *)&addr,  &addrlen ) ) == -1 )
+    {
+        Com_Printf( "ERROR: Net_Accept: %s\n", Net_ErrorString( ) );
+        return ( INVALID_SOCKET_HANDLE );
+    }
+    
+    return ( newsocket );
+    
+}
+
+
+int Net_Connect( lsocket sock, const char *host, u16 port )
+{
+    
+    struct sockaddr_in addr;
+    struct hostent *h;
+    
+    memset( &addr, 0, sizeof( addr ) );
+    
+    addr.sin_family = AF_INET;
+    addr.sin_port = htons( port ); 
+    
+    // @Note(Karlo): First we try to parse the IP directly, if it fails we fallback to DNS
+    addr.sin_addr.s_addr = inet_addr( host );
+    
+    if ( addr.sin_addr.s_addr == INADDR_NONE )
+    {
+        
+        h = gethostbyname( host );
+        if ( !h )
+        {
+            Com_Printf( "ERROR: Net_Connect: couldn't resolve %s\n", host );
+            return ( -1 );
+        }
+        
+        addr.sin_addr = *( struct in_addr *)h->h_addr_list[0]; 
+    }
+    
+    if ( connect( sock, ( struct sockaddr *)&addr, sizeof( addr ) ) == -1 )
+    {
+        
+        Com_Printf( "ERROR: Net_Connect: %s\n", Net_ErrorString( ) );
+        return ( -1 );
+    }    
+    
+    return ( 0 ); 
+}
+
+
 
 
 

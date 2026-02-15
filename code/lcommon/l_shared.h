@@ -185,12 +185,13 @@ CONNECTION STATE
 */
 
 typedef enum {
+    
   CONN_DISCONNECTED,
   CONN_CONNECTING,
   CONN_CONNECTED,
   CONN_AUTHENTICATED
+  
 } connstate_t;
-
 
 
 
