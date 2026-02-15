@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-15 17:29:12
    Last Modified by: ksiric
-   Last Modified: 2026-02-15 17:54:43
+   Last Modified: 2026-02-15 19:12:56
    ---------------------------------------------------------------------
    Description:
        
@@ -53,24 +53,45 @@ lsocket Net_Socket( void )
 {
     
     int sock;
+    
     sock = socket( AF_INET, SOCK_STREAM, 0 );
     if ( sock == -1 ) {
         return ( INVALID_SOCKET_HANDLE );
     }
-    
-    
+     
     return ( sock );
     
 }
 
 
 int Net_Bind( lsocket sock, u16 port )
-{
+{    
+    
+    struct sockaddr_in addr;
+    
+    int opt = 1;
+    
+    setsockopt( sock, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof( opt ) );
+    
+    memset( &addr, 0, sizeof( addr ) );
+    
+    addr.sin_family = AF_INET;
+    addr.sin_addr.s_addr = INADDR_ANY;
+    addr.sin_port = htons( port );
+    
+    if ( bind( sock, ( struct sockaddr * )&addr, sizeof( addr ) ) == -1 )
+    {
+        return ( -1 );
+    }
     
     
-    
-    
+    return ( 0 );
+         
 }
+
+
+
+
 
 
 
