@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-15 17:27:05
    Last Modified by: ksiric
-   Last Modified: 2026-02-15 17:38:28
+   Last Modified: 2026-02-15 17:40:35
    ---------------------------------------------------------------------
    Description:
        
@@ -74,13 +74,14 @@ void Sys_Error( const char *msg )
 u64 Sys_GetMilliseconds( void )
 {
     
-       
-    
-    
-    
-    
+    struct timeval tp;
+    gettimeofday( &tp, NULL );
+    return ( tp.tv_sec - sys_timeBase ) * 1000 + tp.tv_usec / 1000;
     
 }
+
+
+
 
 
 
