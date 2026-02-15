@@ -23,7 +23,19 @@ typedef enum {
 } lboolean;
 
 
+/* errors */
+
+typedef enum {
+     
+    LERR_FATAL,
+    LERR_DROP
+    
+} lerror_t;
+
+
 typedef unsigned char byte;
+
+
 
 
 /* Unsigned integers */
