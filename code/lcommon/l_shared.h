@@ -1,7 +1,6 @@
                             /* LAIR TYPES HEADER - l_shared.h */
 
 
-
 #ifndef __LAIR_SHARED_H__
 #define __LAIR_SHARED_H__
 
@@ -13,146 +12,73 @@
 
 
 /*
-  ======================================
-  VERSION
-  ======================================
+=============================================================
+VERSION
+==============================================================
 */
 
 #define LAIR_VERSION           "Lair 1.00a"
 
 
 /*
-  ======================================
-  PLATFORM
-  ======================================
+=============================================================
+CPUSTRING
+==============================================================
 */
 
-/* Platform OS detection */
+#ifdef _WIN32
 
-#if defined( _WIN32 )
-
-    #define LAIR_PLATFORM_WINDOWS
-
-#elif defined( __APPLE__ )
-
-    #define LAIR_PLATFORM_MACOS
-
-#elif defined( __linux__ )
-
-    #define LAIR_PLATFORM_LINUX
-
-#else
-
-    #error "Unsupported platform"
+  #ifdef NDEBUG
+      #ifdef _M_ARM64
+          #define CPUSTRING   "win-arm64"
+      #elif defined _M_X64
+          #define CPUSTRING   "win-x86_64"
+      #elif defined _M_IX86
+          #define CPUSTRING   "win-x86"
+      #else
+          #define CPUSTRING   "win-unknown"
+      #endif
+  #else
+      #ifdef _M_ARM64
+          #define CPUSTRING   "win-arm64-debug"
+      #elif defined _M_X64
+          #define CPUSTRING   "win-x86_64-debug"
+      #elif defined _M_IX86
+          #define CPUSTRING   "win-x86-debug"
+      #else
+          #define CPUSTRING   "win-unknown-debug"
+      #endif
+  #endif
 
 #endif
 
 
-/* CPUSTRING - platform + CPU architecture */
+#ifdef __APPLE__
 
-#if defined(LAIR_PLATFORM_WINDOWS)
-  #if defined(_M_ARM64)
-      #define LAIR_ARCH_ARM64
-      #if defined(_DEBUG) || defined(DEBUG)
-          #define CPUSTRING "win-arm64-debug"
-      #else
-          #define CPUSTRING "win-arm64"
-      #endif
-  #elif defined(_M_X64) || defined(_WIN64)
-      #define LAIR_ARCH_X64
-      #if defined(_DEBUG) || defined(DEBUG)
-          #define CPUSTRING "win-x86_64-debug"
-      #else
-          #define CPUSTRING "win-x86_64"
-      #endif
-  #elif defined(_M_IX86)
-      #define LAIR_ARCH_X86
-      #if defined(_DEBUG) || defined(DEBUG)
-          #define CPUSTRING "win-x86-debug"
-      #else
-          #define CPUSTRING "win-x86"
-      #endif
+  #ifdef __arm64__
+      #define CPUSTRING   "macos-arm64"
+  #elif defined __x86_64__
+      #define CPUSTRING   "macos-x86_64"
   #else
-      #define CPUSTRING "win-unknown"
+      #define CPUSTRING   "macos-unknown"
   #endif
 
-#elif defined(LAIR_PLATFORM_MACOS)
-  #if defined(__arm64__) || defined(__aarch64__)
-      #define LAIR_ARCH_ARM64
-      #if defined(DEBUG)
-          #define CPUSTRING "macos-arm64-debug"
-      #else
-          #define CPUSTRING "macos-arm64"
-      #endif
-  #elif defined(__x86_64__)
-      #define LAIR_ARCH_X64
-      #if defined(DEBUG)
-          #define CPUSTRING "macos-x86_64-debug"
-      #else
-          #define CPUSTRING "macos-x86_64"
-      #endif
+#endif
+
+
+#ifdef __linux__
+
+  #ifdef __x86_64__
+      #define CPUSTRING   "linux-x86_64"
+  #elif defined __aarch64__
+      #define CPUSTRING   "linux-arm64"
+  #elif defined __i386__
+      #define CPUSTRING   "linux-i386"
   #else
-      #define CPUSTRING "macos-unknown"
+      #define CPUSTRING   "linux-unknown"
   #endif
 
-#elif defined(LAIR_PLATFORM_LINUX)
-  #if defined(__aarch64__)
-      #define LAIR_ARCH_ARM64
-      #if defined(DEBUG)
-          #define CPUSTRING "linux-arm64-debug"
-      #else
-          #define CPUSTRING "linux-arm64"
-      #endif
-  #elif defined(__x86_64__)
-      #define LAIR_ARCH_X64
-      #if defined(DEBUG)
-          #define CPUSTRING "linux-x86_64-debug"
-      #else
-          #define CPUSTRING "linux-x86_64"
-      #endif
-  #elif defined(__i386__)
-      #define LAIR_ARCH_X86
-      #if defined(DEBUG)
-          #define CPUSTRING "linux-x86-debug"
-      #else
-          #define CPUSTRING "linux-x86"
-      #endif
-  #else
-      #define CPUSTRING "linux-unknown"
-  #endif
-
-#else
-  #define CPUSTRING "unknown"
-#endif    
-
-
-
-
-
-  
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#endif
 
 
 
@@ -184,12 +110,10 @@ typedef uint64_t u64;
 
 
 
-
 typedef int8_t   s8;
 typedef int16_t  s16;
 typedef int32_t  s32;
 typedef int64_t  s64;
-
 
 
 
