@@ -1,4 +1,4 @@
-/* LAIR TYPES HEADER */
+                            /* LAIR TYPES HEADER - types.h */
 
 
 
@@ -10,7 +10,6 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <stddef.h>
-
 
 
 
