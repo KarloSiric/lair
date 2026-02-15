@@ -2,14 +2,29 @@
 
 
 
-#ifndef __LAIR_TYPES_H
-#define __LAIR_TYPES_H 
+#ifndef __LAIR_TYPES_H__
+#define __LAIR_TYPES_H__
 
 
 
 #include <stdint.h>
 #include <stdlib.h>
 #include <stddef.h>
+
+
+
+
+/* boolean */
+
+typedef enum {
+    
+    lfalse,
+    ltrue
+    
+} lboolean;
+
+
+typedef unsigned char byte;
 
 
 /* Unsigned integers */
@@ -36,20 +51,18 @@ typedef double   f64;         // 64 bits
 
 
 
+/* Defining math values */
+
+typedef f32      vec_t;
+typedef vec_t    vec2_t[2];
+typedef vec_t    vec3_t[3];
+typedef vec_t    vec4_t[4];
+
+
 /* Size values */
 
 typedef size_t    usize;
 typedef ptrdiff_t ssize;
-
-
-
-
-
-
-
-
-
-
 
 
 
