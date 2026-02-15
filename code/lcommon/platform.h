@@ -5,7 +5,7 @@
 #define __LAIR_PLATFORM_H 
 
 
-#include "types.h"
+#include "l_shared.h"
 
 
 

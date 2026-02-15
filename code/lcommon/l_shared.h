@@ -50,8 +50,80 @@
 
 /* CPUSTRING - platform + CPU architecture */
 
-#if defined( LAIR_PLATFORM_WINDOWS )
-    
+#if defined(LAIR_PLATFORM_WINDOWS)
+  #if defined(_M_ARM64)
+      #define LAIR_ARCH_ARM64
+      #if defined(_DEBUG) || defined(DEBUG)
+          #define CPUSTRING "win-arm64-debug"
+      #else
+          #define CPUSTRING "win-arm64"
+      #endif
+  #elif defined(_M_X64) || defined(_WIN64)
+      #define LAIR_ARCH_X64
+      #if defined(_DEBUG) || defined(DEBUG)
+          #define CPUSTRING "win-x86_64-debug"
+      #else
+          #define CPUSTRING "win-x86_64"
+      #endif
+  #elif defined(_M_IX86)
+      #define LAIR_ARCH_X86
+      #if defined(_DEBUG) || defined(DEBUG)
+          #define CPUSTRING "win-x86-debug"
+      #else
+          #define CPUSTRING "win-x86"
+      #endif
+  #else
+      #define CPUSTRING "win-unknown"
+  #endif
+
+#elif defined(LAIR_PLATFORM_MACOS)
+  #if defined(__arm64__) || defined(__aarch64__)
+      #define LAIR_ARCH_ARM64
+      #if defined(DEBUG)
+          #define CPUSTRING "macos-arm64-debug"
+      #else
+          #define CPUSTRING "macos-arm64"
+      #endif
+  #elif defined(__x86_64__)
+      #define LAIR_ARCH_X64
+      #if defined(DEBUG)
+          #define CPUSTRING "macos-x86_64-debug"
+      #else
+          #define CPUSTRING "macos-x86_64"
+      #endif
+  #else
+      #define CPUSTRING "macos-unknown"
+  #endif
+
+#elif defined(LAIR_PLATFORM_LINUX)
+  #if defined(__aarch64__)
+      #define LAIR_ARCH_ARM64
+      #if defined(DEBUG)
+          #define CPUSTRING "linux-arm64-debug"
+      #else
+          #define CPUSTRING "linux-arm64"
+      #endif
+  #elif defined(__x86_64__)
+      #define LAIR_ARCH_X64
+      #if defined(DEBUG)
+          #define CPUSTRING "linux-x86_64-debug"
+      #else
+          #define CPUSTRING "linux-x86_64"
+      #endif
+  #elif defined(__i386__)
+      #define LAIR_ARCH_X86
+      #if defined(DEBUG)
+          #define CPUSTRING "linux-x86-debug"
+      #else
+          #define CPUSTRING "linux-x86"
+      #endif
+  #else
+      #define CPUSTRING "linux-unknown"
+  #endif
+
+#else
+  #define CPUSTRING "unknown"
+#endif    
 
 
 
