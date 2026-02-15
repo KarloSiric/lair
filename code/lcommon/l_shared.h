@@ -11,6 +11,7 @@
 #include <stddef.h>
 
 
+
 /*
 =============================================================
 VERSION
@@ -18,7 +19,6 @@ VERSION
 */
 
 #define LAIR_VERSION           "Lair 1.00a"
-
 
 /*
 =============================================================
@@ -82,6 +82,48 @@ CPUSTRING
 
 
 
+/*
+==============================================================
+PRINT LEVELS
+==============================================================
+*/
+
+
+
+typedef enum {
+    
+    PRINT_ALL,
+    PRINT_DEVELOPER,
+    PRINT_WARNING,
+    PRINT_ERROR
+    
+} printlevel_t;
+
+
+
+/*
+=============================================================
+ERROR LEVELS
+=============================================================
+*/
+
+
+typedef enum {
+    
+    ERR_FATAL,
+    ERR_DROP,
+    ERR_SERVERDISCONNECT,
+    ERR_DISCONNECT,
+    ERR_TIMEOUT,
+    ERR_AUTH
+    
+} lerror_t;
+
+
+
+
+
+
 typedef enum {
     
     lfalse,
@@ -89,14 +131,6 @@ typedef enum {
     
 } lboolean;
 
-
-
-typedef enum {
-     
-    LERR_FATAL,
-    LERR_DROP
-    
-} lerror_t;
 
 
 typedef unsigned char byte;
