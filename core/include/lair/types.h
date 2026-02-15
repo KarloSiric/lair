@@ -8,6 +8,8 @@
 
 
 #include <stdint.h>
+#include <stdlib.h>
+#include <stddef.h>
 
 
 /* Unsigned integers */
@@ -34,7 +36,10 @@ typedef double   f64;         // 64 bits
 
 
 
+/* Size values */
 
+typedef size_t    usize;
+typedef ptrdiff_t ssize;
 
 
 
