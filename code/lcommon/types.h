@@ -44,6 +44,7 @@ typedef int32_t  s32;
 typedef int64_t  s64;
 
 
+
 /* Floating point values */
 
 typedef float    f32;         // 32 bits pretty much everywhere ( 4 bytes )
@@ -60,6 +61,7 @@ typedef vec_t    vec4_t[4];
 
 
 /* Size values */
+
 
 typedef size_t    usize;
 typedef ptrdiff_t ssize;
