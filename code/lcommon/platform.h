@@ -5,6 +5,31 @@
 #define __LAIR_PLATFORM_H 
 
 
+#include "types.h"
+
+
+
+/*
+ ======================================
+            SYSTEM ( Sys_ )
+ ======================================
+*/
+
+
+
+int Sys_Init( void );
+
+
+
+void Sys_Shutdown( void );
+
+
+
+u64 Sys_GetMilliseconds( void );
+
+
+
+
 
 
 
