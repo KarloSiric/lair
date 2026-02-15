@@ -12,8 +12,77 @@
 #include <stddef.h>
 
 
+/*
+  ======================================
+  VERSION
+  ======================================
+*/
 
-/* boolean */
+#define LAIR_VERSION           "Lair 1.00a"
+
+
+/*
+  ======================================
+  PLATFORM
+  ======================================
+*/
+
+/* Platform OS detection */
+
+#if defined( _WIN32 )
+
+    #define LAIR_PLATFORM_WINDOWS
+
+#elif defined( __APPLE__ )
+
+    #define LAIR_PLATFORM_MACOS
+
+#elif defined( __linux__ )
+
+    #define LAIR_PLATFORM_LINUX
+
+#else
+
+    #error "Unsupported platform"
+
+#endif
+
+
+/* CPUSTRING - platform + CPU architecture */
+
+#if defined( LAIR_PLATFORM_WINDOWS )
+    
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 typedef enum {
     
@@ -23,7 +92,6 @@ typedef enum {
 } lboolean;
 
 
-/* errors */
 
 typedef enum {
      
@@ -37,9 +105,6 @@ typedef unsigned char byte;
 
 
 
-
-/* Unsigned integers */
-
 typedef uint8_t  u8;
 typedef uint16_t u16;
 typedef uint32_t u32;
@@ -47,7 +112,6 @@ typedef uint64_t u64;
 
 
 
-/* Signed integers */
 
 typedef int8_t   s8;
 typedef int16_t  s16;
@@ -56,22 +120,17 @@ typedef int64_t  s64;
 
 
 
-/* Floating point values */
 
 typedef float    f32;         // 32 bits pretty much everywhere ( 4 bytes )
 typedef double   f64;         // 64 bits 
 
 
 
-/* Defining math values */
-
 typedef f32      vec_t;
 typedef vec_t    vec2_t[2];
 typedef vec_t    vec3_t[3];
 typedef vec_t    vec4_t[4];
 
-
-/* Size values */
 
 
 typedef size_t    usize;
