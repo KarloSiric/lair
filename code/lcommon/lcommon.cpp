@@ -68,14 +68,12 @@ void Com_Error( lerror_t level, const char *fmt, ... )
     
     
     
-    
-    
-    
     */
     
-    
-    
 }
+
+
+
 
 
 
