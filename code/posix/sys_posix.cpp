@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-15 17:27:05
    Last Modified by: ksiric
-   Last Modified: 2026-02-15 17:40:35
+   Last Modified: 2026-02-15 17:43:20
    ---------------------------------------------------------------------
    Description:
        
@@ -45,6 +45,7 @@ int Sys_Init( void )
 void Sys_Shutdown( void )
 {
     
+    // @Note(Karlo): Will be added later, still not needed
     
     
     return ;
