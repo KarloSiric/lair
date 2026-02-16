@@ -39,7 +39,7 @@ target_include_directories(lair_platform PUBLIC code/lcommon)
 
 # Common library
 add_library(lair_common STATIC
-    code/lcommon/lcommon.cpp
+    code/lcommon/common.cpp
 )
 
 target_include_directories(lair_common PUBLIC code/lcommon)
@@ -50,7 +50,9 @@ target_link_libraries(lair_common lair_platform cjson)
 if(LAIR_BUILD_SERVER)
     add_executable(lair_server
         code/server/main.cpp
+        code/server/sv_main.cpp
     )
+    target_link_directories(lair_server PRIVATE code/server)
     target_link_libraries(lair_server lair_common lair_platform)
 endif()
 

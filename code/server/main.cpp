@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-16 01:52:19
    Last Modified by: ksiric
-   Last Modified: 2026-02-16 11:53:29
+   Last Modified: 2026-02-16 11:55:29
    ---------------------------------------------------------------------
    Description:
        
@@ -24,12 +24,10 @@
 
 int main(int argc, char **argv)
 {
-    
-    
+       
     Com_Init();
     SV_Init();
-    
-    
+     
     while ( 1 )
     {
         SV_Frame();
