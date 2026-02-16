@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-16 01:36:42
    Last Modified by: ksiric
-   Last Modified: 2026-02-16 12:06:09
+   Last Modified: 2026-02-16 14:02:32
    ---------------------------------------------------------------------
    Description:
        
@@ -74,7 +74,7 @@ void SV_Frame( void )
     
     // TODO: Needs to be updated right 
     
-    lsocket clientsocket;
+    lsockett clientsocket;
     clientsocket = Net_Accept( sv.socket );
     
     if ( clientsocket != INVALID_SOCKET_HANDLE )
