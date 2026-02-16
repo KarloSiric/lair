@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-16 15:06:21
    Last Modified by: ksiric
-   Last Modified: 2026-02-16 15:39:35
+   Last Modified: 2026-02-16 15:55:02
    ---------------------------------------------------------------------
    Description:
        
@@ -119,12 +119,66 @@ void MSG_WriteString( msg_t *msg, const char *data )
         return ;
     }
     
-    size_t datalen = sizeof( data ) - 1;
+    size_t datalen = strlen( data ) - 1;
     
     if ( msg->cursize + ( int )datalen > msg->maxsize )
     {
         
+        msg->overflowed = ltrue;
+        return ;   
         
+    }
+    
+    
+    memcpy( msg->data + msg->cursize, data, datalen );
+    msg->cursize += datalen; 
+    
+}
+
+
+
+void MSG_WriteData( msg_t *msg, const void *data, usize datalen )
+{
+    
+    if ( msg->cursize + datalen > msg->maxsize )
+    {
+        
+        msg->overflowed = ltrue;
+        return ;
+        
+    }
+    
+    memcpy( msg->data + msg->cursize, data, datalen );
+    msg->cursize += datalen;
+    
+}
+
+
+int MSG_ReadByte( msg_t *msg ) 
+{
+    
+    
+    if ( msg->readcount + 1 > msg->cursize )
+    {
+        
+        return ( -1 );
+        
+    }
+    
+    int i = msg->data[msg->readcount++];
+    
+    return i;
+    
+}
+
+
+int MSG_ReadShort( msg_t *msg )
+{
+    
+    if ( msg->readcount + 1 > msg->cursize )
+    {
+        
+        return ( -1 );
         
     }
     

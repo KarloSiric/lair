@@ -172,7 +172,7 @@ SOCKET TYPE
 ==============================================================
 */
 
-typedef int lsockett;
+typedef int lsocket;
 
 #define INVALID_SOCKET_HANDLE   (-1)
 

@@ -147,10 +147,10 @@ void MSG_WriteString( msg_t *msg, const char *data );
 void MSG_WriteData( msg_t *msg, const void *data, usize datalen );
 
 
-void MSG_ReadByte( msg_t *msg );
+int MSG_ReadByte( msg_t *msg );
 
 
-void MSG_ReadShort( msg_t *msg );
+int MSG_ReadShort( msg_t *msg );
 
 
 void MSG_ReadLong( msg_t *msg );
