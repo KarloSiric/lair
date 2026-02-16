@@ -1,8 +1,8 @@
                             /* LAIR PLATFORM HEADER - platform.h */
 
 
-#ifndef __LAIR_PLATFORM_H
-#define __LAIR_PLATFORM_H 
+#ifndef __LAIR_PLATFORM_H__
+#define __LAIR_PLATFORM_H__
 
 
 
@@ -60,4 +60,4 @@ void Net_Close( lsocket sock );
 
 
 
-#endif             /* __LAIR_PLATFORM_H END */
+#endif             /* __LAIR_PLATFORM_H__ END */

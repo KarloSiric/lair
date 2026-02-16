@@ -238,4 +238,4 @@ typedef ptrdiff_t ssize;
 
 
 
-#endif        /* __LAIR_TYPES_H END */
+#endif        /* __LAIR_SHARED_H__ END */

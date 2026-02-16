@@ -1,8 +1,8 @@
                             /* LAIR COMMON HEADER - lcommon.h */
                             
 
-#ifndef __LAIR_COMMON_H
-#define __LAIR_COMMON_H 
+#ifndef __LAIR_COMMON_H__
+#define __LAIR_COMMON_H__
 
 
 #include "l_shared.h"
@@ -31,11 +31,13 @@ void Com_Error( lerror_t level, const char *fmt, ... );
 void Com_Init( void );
 void Com_Shutdown( void );
 
+void Com_Frame( void );
+
 
 /* Time */
 u64 Com_Milliseconds( void );
 
 
 
-#endif        /* __LAIR_COMMON_H END */
+#endif        /* __LAIR_COMMON_H__ END */
 
