@@ -43,7 +43,9 @@ void         SV_Frame( void );
 int          SV_FindFreeClientSlot( void );
 void         SV_DropClient( int clientnum, const char *reason );
 void         SV_BroadcastMessage( msg_t *msg );
+void         SV_ReadClientMessage( int clientnum );
 client_t    *SV_GetClient( int clientnum );
+
 
 
 #endif     /* __SERVER_H__ - END */
