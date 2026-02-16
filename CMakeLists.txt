@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(lair VERSION 1.00a LANGUAGES C CXX)
+project(lair VERSION 1.0.0 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -40,6 +40,7 @@ target_include_directories(lair_platform PUBLIC code/lcommon)
 # Common library
 add_library(lair_common STATIC
     code/lcommon/common.cpp
+    code/lcommon/msg.cpp
 )
 
 target_include_directories(lair_common PUBLIC code/lcommon)
@@ -52,7 +53,7 @@ if(LAIR_BUILD_SERVER)
         code/server/main.cpp
         code/server/sv_main.cpp
     )
-    target_link_directories(lair_server PRIVATE code/server)
+    target_include_directories(lair_server PRIVATE code/server)
     target_link_libraries(lair_server lair_common lair_platform)
 endif()
 
