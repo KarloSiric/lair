@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-16 01:36:42
    Last Modified by: ksiric
-   Last Modified: 2026-02-16 23:21:57
+   Last Modified: 2026-02-16 23:32:40
    ---------------------------------------------------------------------
    Description:
 
@@ -183,13 +183,14 @@ void SV_ReadClientMessage( int clientnum )
     client_t *client = SV_GetClient( clientnum );
     byte buf[MAX_MSG_LEN];
     
-    size_t length;
+    int length;
     
     length = Net_Recv( client->socket, buf, sizeof( buf ) );
     
     if ( length <= 0 )
     {
-        SV_DropClient( clientnum, "connection closed" );
+        SV_DropClient( clientnum, length == 0 ? "disconnected" : "connection error" );
+        
         return ;
     }
     
