@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-16 01:36:42
    Last Modified by: ksiric
-   Last Modified: 2026-02-16 17:34:00
+   Last Modified: 2026-02-16 19:16:01
    ---------------------------------------------------------------------
    Description:
        
@@ -85,6 +85,44 @@ void SV_Frame( void )
     }
     
     return ;
+    
+}
+
+
+int SV_FindFreeClientSlot( void )
+{
+    int i;
+    
+    for ( i = 0; i < MAX_CLIENTS; i++ ) 
+    {
+        if ( !sv.clients[i].active )
+        {
+            return ( i ) ;
+        }
+    }
+    
+    return ( -1 ); // server full
+    
+}
+
+
+void SV_DropClient( int clientnum, const char *reason )
+{
+    
+    client_t *client = SV_GetClient( clientnum );
+    
+    if ( !client || !client->active )
+    {
+        return ;   
+    }
+    
+    Com_Printf( "Client %s dropped: %s\n", client->name, reason );
+    Net_Close( client->socket );
+    client->active = lfalse;
+    client->socket = INVALID_SOCKET_HANDLE;
+    client->name[0] = '\0';
+    
+    sv.numclients--;
     
 }
 

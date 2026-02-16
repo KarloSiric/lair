@@ -207,34 +207,34 @@ typedef unsigned char byte;
 
 
 
-typedef uint8_t  u8;
-typedef uint16_t u16;
-typedef uint32_t u32;
-typedef uint64_t u64;
+typedef uint8_t     u8;
+typedef uint16_t    u16;
+typedef uint32_t    u32;
+typedef uint64_t    u64;
 
 
 
-typedef int8_t   s8;
-typedef int16_t  s16;
-typedef int32_t  s32;
-typedef int64_t  s64;
+typedef int8_t      s8;
+typedef int16_t     s16;
+typedef int32_t     s32;
+typedef int64_t     s64;
 
 
 
-typedef float    f32;         // 32 bits pretty much everywhere ( 4 bytes )
-typedef double   f64;         // 64 bits 
+typedef float       f32;         // 32 bits pretty much everywhere ( 4 bytes )
+typedef double      f64;         // 64 bits 
 
 
 
-typedef f32      vec_t;
-typedef vec_t    vec2_t[2];
-typedef vec_t    vec3_t[3];
-typedef vec_t    vec4_t[4];
+typedef f32         vec_t;
+typedef vec_t       vec2_t[2];
+typedef vec_t       vec3_t[3];
+typedef vec_t       vec4_t[4];
 
 
 
-typedef size_t    usize;
-typedef ptrdiff_t ssize;
+typedef size_t      usize;
+typedef ptrdiff_t   ssize;
 
 
 

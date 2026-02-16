@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-16 15:06:21
    Last Modified by: ksiric
-   Last Modified: 2026-02-16 17:31:22
+   Last Modified: 2026-02-16 18:55:12
    ---------------------------------------------------------------------
    Description:
        
@@ -245,7 +245,7 @@ char *MSG_ReadString( msg_t *msg )
 void MSG_ReadData( msg_t *msg, void *data, usize datalen )
 {
     
-    if ( msg->readcount + datalen > msg->cursize )
+    if ( msg->readcount + ( int )datalen > msg->cursize )
     {
         
         memset( data, 0, datalen );
