@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-16 01:36:42
    Last Modified by: ksiric
-   Last Modified: 2026-02-16 23:32:40
+   Last Modified: 2026-02-16 23:37:31
    ---------------------------------------------------------------------
    Description:
 
@@ -118,7 +118,7 @@ void SV_Frame( void ) {
                 sv.clients[clientnum].status = STATUS_ONLINE;
                 sv.numclients++;
                 
-                Com_Printf( "Client %d connected\n", clientnum );
+                Com_Printf( "Client %d: %s connected\n", clientnum, sv.clients[clientnum].name );
                 
             }    
         }
@@ -158,7 +158,7 @@ void SV_DropClient( int clientnum, const char *reason ) {
 		return;
 	}
 
-	Com_Printf( "Client %s dropped: %s\n", client->name, reason );
+	Com_Printf( "Client %d: %s dropped: %s\n", clientnum, client->name, reason );
 	Net_Close( client->socket );
 	client->active = lfalse;
 	client->socket = INVALID_SOCKET_HANDLE;
@@ -189,8 +189,7 @@ void SV_ReadClientMessage( int clientnum )
     
     if ( length <= 0 )
     {
-        SV_DropClient( clientnum, length == 0 ? "disconnected" : "connection error" );
-        
+        SV_DropClient( clientnum, length == 0 ? "disconnected" : "connection error" ); 
         return ;
     }
     
