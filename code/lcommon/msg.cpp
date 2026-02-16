@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-16 15:06:21
    Last Modified by: ksiric
-   Last Modified: 2026-02-16 15:35:47
+   Last Modified: 2026-02-16 15:39:35
    ---------------------------------------------------------------------
    Description:
        
@@ -119,6 +119,14 @@ void MSG_WriteString( msg_t *msg, const char *data )
         return ;
     }
     
+    size_t datalen = sizeof( data ) - 1;
+    
+    if ( msg->cursize + ( int )datalen > msg->maxsize )
+    {
+        
+        
+        
+    }
     
     
     

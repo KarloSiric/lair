@@ -158,9 +158,9 @@ UTILITY MACROS
 
 
 
-#define MIN( a,b )        ( ( a ) < ( b ) ? ( a ) : ( b ))
-#define MAX( a,b )        ( ( a ) > ( b ) ? ( a ) : ( b ))
-#define CLAMP( x,lo,hi )  ( MIN( MAX( ( x ),( lo ) ),( hi ) ) )
+#define MIN( a,b )            ( ( a ) < ( b ) ? ( a ) : ( b ))
+#define MAX( a,b )            ( ( a ) > ( b ) ? ( a ) : ( b ))
+#define CLAMP( x,lo,hi )      ( MIN( MAX( ( x ),( lo ) ),( hi ) ) )
 
 #define ARRAY_COUNT( arr )    ( sizeof( arr ) / sizeof( ( arr )[0]) )
 
@@ -172,7 +172,7 @@ SOCKET TYPE
 ==============================================================
 */
 
-typedef int lsocket;
+typedef int lsockett;
 
 #define INVALID_SOCKET_HANDLE   (-1)
 
