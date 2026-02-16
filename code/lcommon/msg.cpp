@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-16 15:06:21
    Last Modified by: ksiric
-   Last Modified: 2026-02-16 15:55:02
+   Last Modified: 2026-02-16 17:31:22
    ---------------------------------------------------------------------
    Description:
        
@@ -21,7 +21,6 @@
 
 
 #include "msg.h"
-#include "lcommon.h"
 
 #include <string.h>
 
@@ -140,7 +139,7 @@ void MSG_WriteString( msg_t *msg, const char *data )
 void MSG_WriteData( msg_t *msg, const void *data, usize datalen )
 {
     
-    if ( msg->cursize + datalen > msg->maxsize )
+    if ( msg->cursize + ( int )datalen > msg->maxsize )
     {
         
         msg->overflowed = ltrue;
@@ -167,7 +166,7 @@ int MSG_ReadByte( msg_t *msg )
     
     int i = msg->data[msg->readcount++];
     
-    return i;
+    return ( i );
     
 }
 
@@ -175,18 +174,87 @@ int MSG_ReadByte( msg_t *msg )
 int MSG_ReadShort( msg_t *msg )
 {
     
-    if ( msg->readcount + 1 > msg->cursize )
+    if ( msg->readcount + 2 > msg->cursize )
     {
         
         return ( -1 );
         
     }
     
+    int i = msg->data[msg->readcount] | ( msg->data[msg->readcount + 1] << 8 );
     
+    msg->cursize += 2;
     
+    return ( i );
     
 }
 
 
+int MSG_ReadLong( msg_t *msg )
+{
+    
+    if ( msg->readcount + 4 > msg->cursize )
+    {
+               
+        return ( -1 );
+    }
+    
+    int i =     msg->data[msg->readcount] 
+            | ( msg->data[msg->readcount + 1] << 8 )
+             | ( msg->data[msg->readcount + 2] << 16 ) 
+              | ( msg->data[msg->readcount + 3] << 24 );
+    
+    msg->readcount += 4;
+    
+    return ( i );
+    
+}
 
+
+char *MSG_ReadString( msg_t *msg )
+{
+    
+    static char string[MAX_STRING_CHARS];
+    int c;
+    int length = 0;
+    
+    while ( 1 )
+    {
+        
+        c = MSG_ReadByte( msg );
+        
+        if ( c == -1 || c == 0 )
+        {
+            break;
+        }
+        
+        if ( length < MAX_STRING_CHARS - 1 )
+        {
+            string[length] = c;
+            length++;           
+        }
+    }
+    
+    
+    string[length] = '\0';    
+    return string;
+    
+}
+
+
+void MSG_ReadData( msg_t *msg, void *data, usize datalen )
+{
+    
+    if ( msg->readcount + datalen > msg->cursize )
+    {
+        
+        memset( data, 0, datalen );
+        return ;
+        
+    }   
+    
+    memcpy( data, msg->data + msg->readcount, datalen );
+    msg->readcount += datalen;   
+    
+}
 

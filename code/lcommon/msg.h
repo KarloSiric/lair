@@ -153,7 +153,7 @@ int MSG_ReadByte( msg_t *msg );
 int MSG_ReadShort( msg_t *msg );
 
 
-void MSG_ReadLong( msg_t *msg );
+int MSG_ReadLong( msg_t *msg );
 
 
 char *MSG_ReadString( msg_t *msg );
