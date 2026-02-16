@@ -97,6 +97,7 @@ typedef enum {
 typedef enum {
     
     DENY_NONE = 0,
+    
     DENY_SERVERFULL,            // No slots available
     DENY_BANNED,                // User is banned
     DENY_BADPASSWORD,           // Wrong password
@@ -104,14 +105,24 @@ typedef enum {
     DENY_BADNAME,               // Invalid username
     DENY_TIMEOUT,               // Connection timed out
 
-    DENY_COUNT
+    DENY_COUNT                  // deny reason count
     
 } deny_reason_t;
 
 
 
-
-
+typedef enum {
+    
+    STATUS_OFFLINE = 0,         // CLient offline
+    
+    STATUS_ONLINE,              // client online
+    STATUS_AWAY,                // client away, not active
+    STATUS_BUSY,                // client busy, do not disturb
+    STATUS_MUTED,               // client muted
+    
+    STATUS_COUNT                // status counter
+    
+} userstatus_t;
 
 
 
@@ -121,19 +132,34 @@ void MSG_Init( msg_t *msg, byte *data, int maxsize );
 void MSG_Clear( msg_t *msg );
 
 
-void MSG_WriteByte( msg_t *msg, int c );
+void MSG_WriteByte( msg_t *msg, int type );
 
 
-void MSG_WriteShort( msg_t *msg, int c );
+void MSG_WriteShort( msg_t *msg, int type );
 
 
+void MSG_WriteLong( msg_t *msg, int type );
 
 
+void MSG_WriteString( msg_t *msg, const char *data );
 
 
+void MSG_WriteData( msg_t *msg, const void *data, usize datalen );
 
 
+void MSG_ReadByte( msg_t *msg );
 
 
+void MSG_ReadShort( msg_t *msg );
 
-#endif
+
+void MSG_ReadLong( msg_t *msg );
+
+
+char *MSG_ReadString( msg_t *msg );
+
+
+void MSG_ReadData( msg_t *msg, void *data, usize datalen );
+
+
+#endif              /* __MSG_H__ - END */
