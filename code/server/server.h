@@ -1,3 +1,6 @@
+                            /* LAIR SERVER HEADER - server.h */
+
+
 #ifndef __SERVER_H__
 #define __SERVER_H__ 
 
@@ -16,17 +19,9 @@ typedef struct {
 
 extern server_t sv;
 
+void SV_Init( void );
+void SV_Shutdown( void );
+void SV_Frame( void ); 
 
 
-
-
-
-
-
-
-
-
-
-
-
-#endif
+#endif     /* __SERVER_H__ - END */

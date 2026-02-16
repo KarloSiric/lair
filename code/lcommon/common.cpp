@@ -1,19 +1,4 @@
-/*======================================================================
-   File: common.cpp
-   Project: lair
-   Author: ksiric <email@example.com>
-   Created: 2026-02-15 12:27:04
-   Last Modified by: ksiric
-   Last Modified: 2026-02-16 00:19:15
-   ---------------------------------------------------------------------
-   Description:
-       
-   ---------------------------------------------------------------------
-   License: 
-   Company: 
-   Version: 0.1.0
- ======================================================================
-                                                                       */
+                        /* lcommon.cpp - Common functions implementation */
 
 
 
@@ -27,17 +12,14 @@
 void Com_Printf( const char *fmt, ... )
 {
     
-    char buf[4096];
+    va_list argptr;
+    char msg[MAX_STRING_CHARS];
     
-    va_list args;
+    va_start( argptr, fmt );
+    vsnprintf( msg, sizeof( msg ), fmt, argptr );
+    va_end( argptr );
     
-    va_start( args, fmt );
-    
-    vsnprintf( buf, sizeof( buf ), fmt, args );
-    
-    va_end( args );
-    
-    Sys_Print( buf );
+    Sys_Print( msg );
     
 }
 
@@ -45,15 +27,17 @@ void Com_Printf( const char *fmt, ... )
 void Com_DPrintf( const char *fmt, ... )
 {
     
-    char buf[4096];
+    va_list argptr;
+    char msg[MAX_STRING_CHARS];
     
-    va_list args; 
+    // @Note( Karlo ): only print if developer mode is on
+    // TODO: Check developer cvar here
     
-    va_start( args, fmt );
-    vsnprintf( buf, sizeof( buf ), fmt, args );
-    va_end( args ); 
+    va_start( argptr, fmt );
+    vsnprintf( msg, sizeof( msg ), fmt, argptr );
+    va_end( argptr );
     
-    Sys_Print( buf );
+    Sys_Print( msg );
     
 }
 
@@ -61,52 +45,69 @@ void Com_DPrintf( const char *fmt, ... )
 void Com_Error( lerror_t level, const char *fmt, ... )
 {
     
-    char buf[4096];
+    va_list argptr;
+    char msg[MAX_STRING_CHARS];
     
-    va_list args;
+    va_start( argptr, fmt );
+    vsnprintf( msg, sizeof( msg ), fmt, argptr );
+    va_end( argptr );
     
-    va_start( args, fmt );
-    
-    vsnprintf( buf, sizeof( buf ), fmt, args );
-    
-    va_end( args );
-    
-    if ( level == ERR_FATAL ) 
-    {
-        Sys_Error( buf );
-    } 
-    else 
-    {
-        Com_Printf( "ERROR: %s\n", buf );
+    if ( level == ERR_FATAL )
+    {  
+        Sys_Error( msg );
+        // never returns
     }
-     
-     
+    
+    Com_Printf( "ERROR: %s\n", msg );
+    
+    // TODO (Karlo ): Need to handle the the other ERR enums once we start implementing them so
+    
+    /*
+    
+    
+    
+    
+    
+    */    
+       
+}
+
+
+u64 Com_Milliseconds( void )
+{
+    
+    return Sys_GetMilliseconds( );
+    
 }
 
 
 void Com_Init( void )
 {
     
-    Sys_Init( );
-    Net_Init( );
-    
-    Com_Printf( "%s %S %S\n", LAIR_VERSION, CPUSTRING, __DATE__ );
-    Com_Printf( " --------------------------\n" );
+    Sys_Init();
+    Net_Init();
+        
+    Com_Printf( "Lair: %s\n", LAIR_VERSION );
+    Com_Printf( "Platform: %s\n", CPUSTRING );
     
 }
 
 
-void Com_Shutdown( void ) 
+void Com_Frame( void )
 {
     
-    Net_Shutdown( );
-    Sys_Shutdown( );
+    // TODO( Karlo ): Adding alter, for now keep it simple
+                    
+    return ;
+        
+}
+
+
+void Com_Shutdown( void )
+{
+    
+    Net_Shutdown();
+    Sys_Shutdown();
     
 }
 
-
-
-u64 Com_Milliseconds( void )
-{
-    return Sys_GetMilliseconds( );
-}
