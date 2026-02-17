@@ -8,7 +8,6 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-
 void Com_Printf( const char *fmt, ... )
 {
     
@@ -96,7 +95,7 @@ void Com_Init( void )
 void Com_Frame( void )
 {
     
-    // TODO( Karlo ): Adding alter, for now keep it simple
+    // TODO( Karlo ): Adding alter, for now keep
                     
     return ;
         

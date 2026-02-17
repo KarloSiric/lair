@@ -11,16 +11,16 @@
 #include "msg.h"
 
 
-
 typedef struct {
     
-    lboolean        active;                  // Slot in use or not ?
-    lsocket         socket;                  // Client's socket
-    char            name[MAX_USERNAME];      // Username
-    userstatus_t    status;                  // Client status: online, away, muted etc...
-    u64             lastmsg;                 // Last message for timeout checking
+    lsocket         socket;
+    lboolean        active;
+    char            name[MAX_USERNAME];
+    userstatus_t    status;
+    u64             lastmsg;
     
-} client_t;
+    
+} sv_client_t;
 
 
 
@@ -29,7 +29,9 @@ typedef struct {
     lsocket         socket;                  // server socket
     lboolean        initialized;             // is the server initialized or not ?
     
-    client_t        clients[MAX_CLIENTS];    // Connected clients array
+    sv_client_t
+
+     clients[MAX_CLIENTS];    // Connected clients array
     int             numclients;              // Current count
     
 } server_t;
@@ -44,7 +46,16 @@ int          SV_FindFreeClientSlot( void );
 void         SV_DropClient( int clientnum, const char *reason );
 void         SV_BroadcastMessage( msg_t *msg );
 void         SV_ReadClientMessage( int clientnum );
-client_t    *SV_GetClient( int clientnum );
+sv_client_t
+
+  *SV_GetClient( int clientnum );
+void         SV_HandleConnect( int clientnum, msg_t *msg );
+void         SV_HandleChat( int clientnum, msg_t *msg );
+void         SV_SendWelcome( int clientnum );
+void         SV_BroadcastUserJoin( int clientnum );
+void         SV_BroadcastUserLeave( int clientnum );
+void         SV_BroadcastChat( int clientnum, const char *text );
+
 
 
 
