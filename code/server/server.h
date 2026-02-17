@@ -1,4 +1,4 @@
-                            /* LAIR SERVER HEADER - server.h */
+/* LAIR SERVER HEADER - server.h */
 
 
 #ifndef __LAIR_SERVER_H__

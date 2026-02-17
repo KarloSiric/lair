@@ -1,4 +1,4 @@
-                            /* LAIR COMMAND SYSTEM HEADER - cmd.h */
+/* LAIR COMMAND SYSTEM HEADER - cmd.h */
 
 
 
@@ -22,29 +22,26 @@ typedef struct cmd_s {
     
 } cmd_t;
 
+// Tokenizer
+void Cmd_TokenizeString( const char *text );     // Function used for taking a input as a string buffer and tokenizing it
+int  Cmd_Argc( void );
+char *Cmd_Argv( int n );                         // Func for getting individual tokens from a string
+char *Cmd_Args( void );                          // Func for assembling the entire command out of all tokens in the line extracted
 
+// Registration
+void Cmd_Init( void );
+void Cmd_Shutdown( void );
+void Cmd_AddCommand( const char *cmdname, cmdfunc_t func );
+void Cmd_RemoveCommand( const char *cmdname );
+cmdfunc_t Cmd_FindCommand( const char *name );
 
+// Command Execution
+void Cmd_ExecuteString( const char *text );
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// Command Buffer
+void Cbuf_Init( void );
+void Cbuf_AddText( const char *text );
+void Cbuf_InsertText( const char *text );
+void Cbuf_Execute( void );
 
 #endif                      /* __LAIR_CMD_H__ - END */
