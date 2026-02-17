@@ -1,8 +1,8 @@
                             /* LAIR SERVER HEADER - server.h */
 
 
-#ifndef __SERVER_H__
-#define __SERVER_H__ 
+#ifndef __LAIR_SERVER_H__
+#define __LAIR_SERVER_H__ 
 
 
 #include "l_shared.h"
@@ -59,4 +59,4 @@ void         SV_BroadcastChat( int clientnum, const char *text );
 
 
 
-#endif     /* __SERVER_H__ - END */
+#endif     /* __LAIR_SERVER_H__ - END */
