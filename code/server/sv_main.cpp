@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-16 01:36:42
    Last Modified by: ksiric
-   Last Modified: 2026-02-17 13:32:11
+   Last Modified: 2026-02-17 14:11:41
    ---------------------------------------------------------------------
    Description:
 
@@ -164,8 +164,7 @@ void SV_BroadcastMessage( msg_t *msg ) {
 	}
 }
 
-void SV_ReadClientMessage( int clientnum ) {
-    
+void SV_ReadClientMessage( int clientnum ) { 
 	sv_client_t *client = SV_GetClient( clientnum );
 	byte buf[MAX_MSG_LEN];
     msg_t msg;
@@ -198,8 +197,7 @@ void SV_ReadClientMessage( int clientnum ) {
             break;
         case MSG_DISCONNECT:
             SV_DropClient( clientnum, "client quit" );
-            break;
-            
+            break; 
         default:    
             Com_Printf( "Unknown message type %d from client %d: %s\n", type, clientnum, sv.clients[clientnum].name );
             break;
