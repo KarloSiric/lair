@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-16 01:36:42
    Last Modified by: ksiric
-   Last Modified: 2026-02-17 00:57:21
+   Last Modified: 2026-02-17 13:32:11
    ---------------------------------------------------------------------
    Description:
 
@@ -103,8 +103,9 @@ void SV_Frame( void ) {
 				sv.clients[clientnum].socket = clientsocket;
 				sv.clients[clientnum].status = STATUS_ONLINE;
 				sv.numclients++;
-
-				Com_Printf( "Client %d: %s connected\n", clientnum, sv.clients[clientnum].name );
+                
+                Com_Printf( "Client %d connected (awaiting identification)\n", clientnum );
+                
 			}
 		}
 	}
@@ -133,7 +134,7 @@ int SV_FindFreeClientSlot( void ) {
 }
 
 void SV_DropClient( int clientnum, const char *reason ) {
-	client_t *client = SV_GetClient( clientnum );
+	sv_client_t *client = SV_GetClient( clientnum );
 
 	if ( !client || !client->active ) {
 		return;
@@ -165,7 +166,7 @@ void SV_BroadcastMessage( msg_t *msg ) {
 
 void SV_ReadClientMessage( int clientnum ) {
     
-	client_t *client = SV_GetClient( clientnum );
+	sv_client_t *client = SV_GetClient( clientnum );
 	byte buf[MAX_MSG_LEN];
     msg_t msg;
     int length;
@@ -207,7 +208,7 @@ void SV_ReadClientMessage( int clientnum ) {
 }
 
 void SV_HandleConnect( int clientnum, msg_t *msg ) {
-	client_t *client = SV_GetClient( clientnum );
+	sv_client_t *client = SV_GetClient( clientnum );
 
 	char *name;
 
@@ -227,12 +228,12 @@ void SV_HandleConnect( int clientnum, msg_t *msg ) {
 
 void SV_HandleChat( int clientnum, msg_t *msg ) {
     
-    client_t *client = SV_GetClient( clientnum );
+    sv_client_t *client = SV_GetClient( clientnum );
     char *text;
     
     text = MSG_ReadString( msg );
     
-    Com_Printf( "%s: %s\n", client->name, text );
+    Com_Printf( "~%s: %s\n", client->name, text );
     
     SV_BroadcastChat( clientnum, text ); 
     
@@ -240,7 +241,7 @@ void SV_HandleChat( int clientnum, msg_t *msg ) {
 
 void SV_SendWelcome( int clientnum ) {
     
-    client_t *client = SV_GetClient( clientnum );
+    sv_client_t *client = SV_GetClient( clientnum );
     msg_t msg;
     byte buf[MAX_MSG_LEN];
     
@@ -256,7 +257,7 @@ void SV_SendWelcome( int clientnum ) {
 
 void SV_BroadcastUserJoin( int clientnum ) {
     
-    client_t *client = SV_GetClient( clientnum );
+    sv_client_t *client = SV_GetClient( clientnum );
     byte buf[MAX_MSG_LEN];
     msg_t msg;
     
@@ -273,7 +274,7 @@ void SV_BroadcastUserJoin( int clientnum ) {
 
 void SV_BroadcastUserLeave( int clientnum ) {
     
-    client_t *client = SV_GetClient( clientnum );
+    sv_client_t *client = SV_GetClient( clientnum );
     byte buf[MAX_MSG_LEN];
     msg_t msg;
     
@@ -294,7 +295,7 @@ void SV_BroadcastUserLeave( int clientnum ) {
 
 void SV_BroadcastChat( int clientnum, const char *text ) {
     
-    client_t *client = SV_GetClient( clientnum );
+    sv_client_t *client = SV_GetClient( clientnum );
     byte buf[MAX_MSG_LEN];
     msg_t msg;
     
@@ -309,7 +310,7 @@ void SV_BroadcastChat( int clientnum, const char *text ) {
     
 }
 
-client_t *SV_GetClient( int clientenum ) {
+sv_client_t *SV_GetClient( int clientenum ) {
 	if ( clientenum < 0 || clientenum >= MAX_CLIENTS ) {
 		return ( NULL );
 	}

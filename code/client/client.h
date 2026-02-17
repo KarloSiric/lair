@@ -22,7 +22,6 @@ typedef struct {
 
 extern cl_client_t cl;
 
-
 void CL_Init( void );
 
 void CL_Shutdown( void );
@@ -40,5 +39,7 @@ void CL_SendChat( const char *text );
 void CL_SendDisconnect( void );
 
 void CL_ReadServerMessages( void );
+
+void CL_Shutdown( void );
 
 #endif          /* __LAIR_CLIENT_H__ - END */

@@ -9,7 +9,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # Build options
 option(LAIR_BUILD_SERVER "Build the server" ON)
 option(LAIR_BUILD_CLIENT "Build the GUI client" OFF)
-option(LAIR_BUILD_CLIENT_TUI "Build the TUI client" OFF)
+option(LAIR_BUILD_CLIENT_TUI "Build the TUI client" ON)
 
 
 # Include paths - so we can just #include "l_shared.h"
@@ -65,4 +65,10 @@ endif()
 
 if(LAIR_BUILD_CLIENT_TUI)
     # add_subdirectory(code/client-tui)
+    add_executable(lair_client
+        code/client/main.cpp
+        code/client/cl_main.cpp
+    )
+    target_include_directories(lair_client PRIVATE code/client)
+    target_link_libraries(lair_client lair_common lair_platform)
 endif()

@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-15 17:29:12
    Last Modified by: ksiric
-   Last Modified: 2026-02-17 00:34:45
+   Last Modified: 2026-02-17 13:13:25
    ---------------------------------------------------------------------
    Description:
 
@@ -144,26 +144,17 @@ int Net_Send( lsocket sock, byte *buf, usize buflen ) {
 int Net_Recv( lsocket sock, byte *buf, usize buflen ) {
 	// @Note(Karlo): Similar to send, we dont know how many are coming in, if 0 ( con closed )
 
-	ssize_t recieved;
-	usize total = 0;
+	ssize_t received;
+    
+    received = recv( sock, buf, buflen, 0 );
+    
+    if ( received == -1 )
+    {
+        return ( -1 );
+    }
+    
+    return ( ( int )received );
 
-	while ( total < buflen ) {
-		recieved = recv( sock, buf + total, buflen - total, 0 );
-
-		if ( recieved == -1 ) {
-			Com_Printf( "ERROR: Net_Recv: %s\n", Net_ErrorString() );
-			return ( -1 );
-		}
-
-		if ( recieved == 0 ) {
-			// Connection closed
-			return ( 0 );
-		}
-
-		total += recieved;
-	}
-
-	return ( (int)total );
 }
 
 void Net_Close( lsocket sock ) {
