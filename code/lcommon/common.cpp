@@ -1,4 +1,4 @@
-                                            /* lcommon.cpp - Common functions implementation */
+/* lcommon.cpp - Common functions implementation */
 
 #include "lcommon.h"
 #include "platform.h"
