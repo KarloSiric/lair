@@ -1,4 +1,4 @@
-                                    /* LAIR CLIENT HEADER - client.h */
+/* LAIR CLIENT HEADER - client.h */
 
 #ifndef __LAIR_CLIENT_H__
 #define __LAIR_CLIENT_H__

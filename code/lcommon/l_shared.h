@@ -202,9 +202,7 @@ DATA TYPES
 */
 
 
-
 typedef unsigned char byte;
-
 
 
 typedef uint8_t     u8;
