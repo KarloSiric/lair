@@ -12,28 +12,21 @@
 
 
 typedef struct {
-    
     lsocket         socket;
     lboolean        active;
     char            name[MAX_USERNAME];
     userstatus_t    status;
     u64             lastmsg;
-    
-    
 } sv_client_t;
 
 
 
 typedef struct {
-    
-    lsocket         socket;                  // server socket
-    lboolean        initialized;             // is the server initialized or not ?
-    
+    lsocket         socket;                     // server socket
+    lboolean        initialized;                // is the server initialized or not ?
     sv_client_t
-
-     clients[MAX_CLIENTS];    // Connected clients array
-    int             numclients;              // Current count
-    
+    clients[MAX_CLIENTS];                       // Connected clients array
+    int             numclients;                 // Current count
 } server_t;
 
 extern server_t     sv;
