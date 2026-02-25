@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-17 17:02:56
    Last Modified by: ksiric
-   Last Modified: 2026-02-25 01:06:37
+   Last Modified: 2026-02-25 01:33:57
    ---------------------------------------------------------------------
    Description:
 
@@ -258,9 +258,24 @@ void Cbuf_InsertText( const char *text ) {
 }
 
 void Cbuf_Execute( void ) {
+    char *trackPos = cmd_buffer;
+    char *trackWord = cmd_buffer;
     
+    while ( *trackPos != '\0' ) {
+        // @TODO(KARLO): Need to find
+        if ( *trackPos == '\n' || *trackPos == ';' ) {
+            *trackPos = '\0';
+            Cmd_ExecuteString( trackWord );
+            trackWord = trackPos + 1;           
+        }
+        trackPos++;
+    }
+    if ( trackWord != trackPos ) {
+        Cmd_ExecuteString( trackWord );   
+    }
     
-    
+    cmd_buffer_len = 0;
+    cmd_buffer[0] = '\0';
     
     return ;
 }

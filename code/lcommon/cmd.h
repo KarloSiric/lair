@@ -18,6 +18,7 @@ typedef struct cmd_s {
     char                 *name;                  // name so the command that we will execute
     cmdfunc_t             func;                  // function pointer that we will use for functions
     struct cmd_s         *next;                  // pointer to the next command structure, essentially a linked list ( no realloc )
+    
 } cmd_t;
 
 // Tokenizer

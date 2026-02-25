@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-15 17:27:05
    Last Modified by: ksiric
-   Last Modified: 2026-02-17 00:34:57
+   Last Modified: 2026-02-25 01:20:12
    ---------------------------------------------------------------------
    Description:
 
@@ -51,4 +51,3 @@ u64 Sys_GetMilliseconds( void ) {
 	gettimeofday( &tp, NULL );
 	return ( tp.tv_sec - sys_timeBase ) * 1000 + tp.tv_usec / 1000;
 }
-
