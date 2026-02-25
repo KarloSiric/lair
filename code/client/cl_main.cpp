@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-17 01:17:55
    Last Modified by: ksiric
-   Last Modified: 2026-02-24 21:02:06
+   Last Modified: 2026-02-24 21:06:44
    ---------------------------------------------------------------------
    Description:
 
@@ -14,7 +14,6 @@
    Version: 1.00a
  ======================================================================
 																	   */
-
 #include "client.h"
 #include "platform.h"
 
@@ -136,97 +135,85 @@ void CL_ReadServerMessages( void ) {
 	type = MSG_ReadByte( &msg );
 
 	switch ( type ) {
-        
-        case MSG_CONNECT_ACCEPTED: 
-        {
-            cl.clientnum =  MSG_ReadByte( &msg );
-            char *welcome = MSG_ReadString( &msg );
-            Com_Printf( "%s (You are client %d)\n", welcome, cl.clientnum );
-            break;
-        }
-        
-        case MSG_CONNECT_DENIED: 
-        {
-            int reason = MSG_ReadByte( &msg );
-            Com_Printf( "Connection denied (reason: %d)\n", reason );
-            cl.connected = lfalse;
-            break;  
-        }
-        
-        case MSG_CHAT: 
-        {
-            int fromid = MSG_ReadByte( &msg );
-            char name[MAX_USERNAME];
-            char text[MAX_STRING_CHARS];
-            
-            strncpy( name, MSG_ReadString( &msg ), MAX_USERNAME - 1 );
-            name[MAX_USERNAME - 1] = '\0';
-            
-            strncpy( text, MSG_ReadString( &msg ), MAX_STRING_CHARS - 1);
-            text[MAX_STRING_CHARS - 1] = '\0';
-            
-            Com_Printf( "~%s: %s\n", name, text );
-            break; 
-        }
-        
-        case MSG_USERJOIN: 
-        {
-            int id = MSG_ReadByte( &msg );
-            char *name = MSG_ReadString( &msg );
-            int status = MSG_ReadByte( &msg );
-            
-            Com_Printf( "* %s joined\n", name );
-            break;
-        }
-        
-        case MSG_USERLEAVE: 
-        {
-            int id = MSG_ReadByte( &msg );
-            char *name = MSG_ReadString( &msg );
-            Com_Printf( "* %s left\n", name );
-            break;
-        }
-        
-        default: 
-        {
-            Com_Printf( "Unknown message: %d\n", type );
-            break;    
-        }
+	case MSG_CONNECT_ACCEPTED: {
+		cl.clientnum = MSG_ReadByte( &msg );
+		char *welcome = MSG_ReadString( &msg );
+		Com_Printf( "%s (You are client %d)\n", welcome, cl.clientnum );
+		break;
+	}
+
+	case MSG_CONNECT_DENIED: {
+		int reason = MSG_ReadByte( &msg );
+		Com_Printf( "Connection denied (reason: %d)\n", reason );
+		cl.connected = lfalse;
+		break;
+	}
+
+	case MSG_CHAT: {
+		int fromid = MSG_ReadByte( &msg );
+		char name[MAX_USERNAME];
+		char text[MAX_STRING_CHARS];
+
+		strncpy( name, MSG_ReadString( &msg ), MAX_USERNAME - 1 );
+		name[MAX_USERNAME - 1] = '\0';
+
+		strncpy( text, MSG_ReadString( &msg ), MAX_STRING_CHARS - 1 );
+		text[MAX_STRING_CHARS - 1] = '\0';
+
+		Com_Printf( "~%s: %s\n", name, text );
+		break;
+	}
+
+	case MSG_USERJOIN: {
+		int id = MSG_ReadByte( &msg );
+		char *name = MSG_ReadString( &msg );
+		int status = MSG_ReadByte( &msg );
+
+		Com_Printf( "* %s joined\n", name );
+		break;
+	}
+
+	case MSG_USERLEAVE: {
+		int id = MSG_ReadByte( &msg );
+		char *name = MSG_ReadString( &msg );
+		Com_Printf( "* %s left\n", name );
+		break;
+	}
+
+	default: {
+		Com_Printf( "Unknown message: %d\n", type );
+		break;
+	}
 	}
 }
 
-void CL_Frame( void ) { 
-    fd_set readfds;
-    struct timeval timeout;
-    
-    if ( !cl.connected ) {
-        return ;
-    }
-    
-    FD_ZERO( &readfds );
-    FD_SET( cl.socket, &readfds );
-    
-    timeout.tv_sec = 0;
-    timeout.tv_usec = 10000; // 10 ms
-    
-    if ( select( cl.socket + 1, &readfds, NULL, NULL, &timeout) > 0 ) 
-    {
-        if ( FD_ISSET( cl.socket, &readfds ) )
-        {
-            CL_ReadServerMessages();
-        }    
-    } 
-    
+void CL_Frame( void ) {
+	fd_set readfds;
+	struct timeval timeout;
+
+	if ( !cl.connected ) {
+		return;
+	}
+
+	FD_ZERO( &readfds );
+	FD_SET( cl.socket, &readfds );
+
+	timeout.tv_sec = 0;
+	timeout.tv_usec = 10000; // 10 ms
+
+	if ( select( cl.socket + 1, &readfds, NULL, NULL, &timeout ) > 0 ) {
+		if ( FD_ISSET( cl.socket, &readfds ) ) {
+			CL_ReadServerMessages();
+		}
+	}
 }
 
 void CL_Shutdown( void ) {
-    
-    if ( !cl.connected ) {
-        return ;
-    }
-    
-    CL_Disconnect();
-    
-    Com_Printf( "Client shutdown complete!\n" ); 
-        
+	if ( !cl.connected ) {
+		return;
+	}
+
+	CL_Disconnect();
+
+	Com_Printf( "Client shutdown complete!\n" );
 }

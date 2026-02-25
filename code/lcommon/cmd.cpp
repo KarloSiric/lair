@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-17 17:02:56
    Last Modified by: ksiric
-   Last Modified: 2026-02-18 01:18:30
+   Last Modified: 2026-02-25 01:06:37
    ---------------------------------------------------------------------
    Description:
 
@@ -22,9 +22,7 @@ static int cmd_argc;
 static char *cmd_argv[MAX_CMD_TOKENS];
 static char cmd_tokenized[MAX_CMD_LENGTH];
 static char cmd_args[MAX_CMD_LENGTH];
-
 static cmd_t *cmd_list = NULL;
-
 static char cmd_buffer[MAX_CMD_BUFFER];
 static int cmd_buffer_len = 0;
 
@@ -38,6 +36,7 @@ void Cmd_TokenizeString( const char *text ) {
 		return;
 	}
 
+	// Skip leading slash (for console commands like "/connect")
 	if ( text[0] == '/' ) {
 		text++;
 	}
@@ -45,23 +44,24 @@ void Cmd_TokenizeString( const char *text ) {
 	out = cmd_tokenized;
 
 	while ( 1 ) {
-		while ( *text && *text <= ' ' ) // loop while essentially we are skipping all whitespace and control characters, clean
-		{
+		// Skip whitespace and control characters
+		while ( *text && *text <= ' ' ) {
 			text++;
 		}
 
-		if ( !*text ) // end of string check ?
-        {
+		if ( !*text ) {
 			break;
 		}
 
-		if ( cmd_argc >= MAX_CMD_TOKENS ) // out of tokens check ?
-		{
+		if ( cmd_argc >= MAX_CMD_TOKENS ) {
 			break;
 		}
 
-		if ( *text == '"' ) // checking if we are dealing with a quoted string, Quoted Tokenization
-		{
+		// Store pointer to this token
+		cmd_argv[cmd_argc] = out;
+
+		if ( *text == '"' ) {
+			// Quoted string tokenization
 			text++;
 			while ( *text && *text != '"' ) {
 				*out++ = *text++;
@@ -70,18 +70,16 @@ void Cmd_TokenizeString( const char *text ) {
 			if ( *text == '"' ) {
 				text++;
 			}
-
-			*out++ = '\0'; // null terminate the token
-		} else // check regular characters, not quotes
-		{
+		} else {
+			// Regular token (non-whitespace characters)
 			while ( *text > ' ' ) {
 				*out++ = *text++;
 			}
-
-			*out++ = '\0'; // null terminate the token
 		}
 
-	} // end while( 1 ) loop!
+		*out++ = '\0';
+		cmd_argc++;
+	}
 }
 
 int Cmd_Argc( void ) {
@@ -94,6 +92,33 @@ char *Cmd_Argv( int n ) {
 	}
 
 	return cmd_argv[n];
+}
+
+char *Cmd_Args( void ) {
+	int i;
+	int len;
+
+	cmd_args[0] = '\0';
+	len = 0;
+
+	// Start from 1 to skip the command name itself
+	for ( i = 1; i < cmd_argc; i++ ) {
+		// Add space between arguments
+		if ( i > 1 ) {
+			if ( len < MAX_CMD_LENGTH - 1 ) {
+				cmd_args[len++] = ' ';
+			}
+		}
+
+		// Copy the argument
+		const char *arg = cmd_argv[i];
+		while ( *arg && len < MAX_CMD_LENGTH - 1 ) {
+			cmd_args[len++] = *arg++;
+		}
+	}
+
+	cmd_args[len] = '\0';
+	return cmd_args;
 }
 
 void Cmd_Init( void ) {
@@ -135,17 +160,107 @@ void Cmd_AddCommand( const char *cmdname, cmdfunc_t func ) {
 }
 
 void Cmd_RemoveCommand( const char *cmdname ) {
-    cmd_t *cmd, *prev;
+	cmd_t *cmd, *prev;
+
+	prev = NULL;
+	cmd = cmd_list;
+
+	while ( cmd ) {
+		if ( strcmp( cmd->name, cmdname ) == 0 ) {
+			// Found the command, remove it from the list
+			if ( prev ) {
+				prev->next = cmd->next;
+			} else {
+				// It's the head of the list
+				cmd_list = cmd->next;
+			}
+
+			free( cmd->name );
+			free( cmd );
+			return;
+		}
+
+		prev = cmd;
+		cmd = cmd->next;
+	}
+}
+
+cmdfunc_t Cmd_FindCommand( const char *name ) {
+	cmd_t *cmd;
+
+	for ( cmd = cmd_list; cmd; cmd = cmd->next ) {
+		if ( strcmp( cmd->name, name ) == 0 ) {
+			return cmd->func;
+		}
+	}
+	return NULL;
+}
+
+void Cmd_ExecuteString( const char *text ) {
+	cmdfunc_t func;
+
+	Cmd_TokenizeString( text );
+
+	// No tokens means nothing to execute
+	if ( cmd_argc == 0 ) {
+		return;
+	}
+
+	// Find and execute the command
+	func = Cmd_FindCommand( cmd_argv[0] );
+	if ( func ) {
+		func();
+		return;
+	}
+
+	// Command not found
+	Com_Printf( "Unknown command: %s\n", cmd_argv[0] );
+}
+
+void Cbuf_Init( void ) {
+    cmd_buffer[0] = '\0';
+    cmd_buffer_len = 0;
     
-    prev = NULL;
-    cmd = cmd_list;
+    return ;
+}
+
+void Cbuf_AddText( const char *text ) {
+    size_t textLen = strlen( text );
     
-    while ( cmd ) {
-        if ( strcmp( cmd->name, cmdname ) == 0 ) {
-            
-            if ( prev ) {
-                
-            }
-        }
-    } 
+    if ( cmd_buffer_len + textLen >= MAX_CMD_BUFFER ) {
+        Com_Printf( "Cbuf_AddText: buffer overflow\n" );
+        return ;
+    }
+    
+    memcpy( cmd_buffer + cmd_buffer_len, text, textLen + 1 );
+    cmd_buffer_len += textLen;
+    
+    return ;
+}
+
+void Cbuf_InsertText( const char *text ) {
+    size_t textLen = strlen( text );
+    
+    char *cmdptr = cmd_buffer;
+    
+    if ( cmd_buffer_len + textLen >= MAX_CMD_BUFFER ) {
+        Com_Printf( "Cbuf_InsertText: buffer overflow\n" );
+        return ;
+    }
+    
+    memmove( cmd_buffer + textLen, cmd_buffer, cmd_buffer_len + 1 );
+    
+    memcpy( cmdptr, text, textLen );
+    
+    cmd_buffer_len += textLen;
+    
+    return ;
+}
+
+void Cbuf_Execute( void ) {
+    
+    
+    
+    
+    return ;
 }

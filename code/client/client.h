@@ -12,7 +12,6 @@ typedef struct {
 	lsocket    socket;                     // Client's socket
 	int        clientnum;                  // Client's id number used for FD_SET to setting each bit array index to slot being used
 	char       name[MAX_USERNAME];         // Username
-
 } cl_client_t;
 
 extern cl_client_t cl;
