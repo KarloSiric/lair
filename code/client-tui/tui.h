@@ -10,11 +10,4 @@ void TUI_DrawInputLine();
 void TUI_DrawChatWindow();
 lboolean TUI_HandleInput();
 
-
-
-
-
-
-
-
-#endif
+#endif          /* __TUI_H__ END */

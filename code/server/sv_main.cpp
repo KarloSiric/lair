@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-16 01:36:42
    Last Modified by: ksiric
-   Last Modified: 2026-02-17 14:11:41
+   Last Modified: 2026-02-25 17:10:30
    ---------------------------------------------------------------------
    Description:
 
@@ -59,8 +59,6 @@ void SV_Shutdown( void ) {
 }
 
 void SV_Frame( void ) {
-	// @NOTE(KARLO):
-
 	fd_set readfds; // bit array usually 1024 bits
 	struct timeval timeout;
 	int maxfd;
@@ -225,7 +223,6 @@ void SV_HandleConnect( int clientnum, msg_t *msg ) {
 }
 
 void SV_HandleChat( int clientnum, msg_t *msg ) {
-    
     sv_client_t *client = SV_GetClient( clientnum );
     char *text;
     
@@ -234,7 +231,6 @@ void SV_HandleChat( int clientnum, msg_t *msg ) {
     Com_Printf( "~%s: %s\n", client->name, text );
     
     SV_BroadcastChat( clientnum, text ); 
-    
 }
 
 void SV_SendWelcome( int clientnum ) {
@@ -254,7 +250,6 @@ void SV_SendWelcome( int clientnum ) {
 }
 
 void SV_BroadcastUserJoin( int clientnum ) {
-    
     sv_client_t *client = SV_GetClient( clientnum );
     byte buf[MAX_MSG_LEN];
     msg_t msg;
@@ -267,11 +262,9 @@ void SV_BroadcastUserJoin( int clientnum ) {
     MSG_WriteByte( &msg, client->status );
     
     SV_BroadcastMessage( &msg ); 
-     
 }
 
 void SV_BroadcastUserLeave( int clientnum ) {
-    
     sv_client_t *client = SV_GetClient( clientnum );
     byte buf[MAX_MSG_LEN];
     msg_t msg;
@@ -288,11 +281,9 @@ void SV_BroadcastUserLeave( int clientnum ) {
     MSG_WriteString( &msg, client->name );
     
     SV_BroadcastMessage( &msg ); 
-    
 }
 
 void SV_BroadcastChat( int clientnum, const char *text ) {
-    
     sv_client_t *client = SV_GetClient( clientnum );
     byte buf[MAX_MSG_LEN];
     msg_t msg;
@@ -305,7 +296,6 @@ void SV_BroadcastChat( int clientnum, const char *text ) {
     MSG_WriteString( &msg, text );
     
     SV_BroadcastMessage( &msg );  
-    
 }
 
 sv_client_t *SV_GetClient( int clientenum ) {
