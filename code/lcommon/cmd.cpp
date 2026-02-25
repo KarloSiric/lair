@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-17 17:02:56
    Last Modified by: ksiric
-   Last Modified: 2026-02-25 01:33:57
+   Last Modified: 2026-02-25 09:55:07
    ---------------------------------------------------------------------
    Description:
 
@@ -125,7 +125,7 @@ void Cmd_Init( void ) {
 	cmd_list = NULL;
 	cmd_buffer_len = 0;
 	cmd_buffer[0] = '\0';
-
+    
 	Com_Printf( "Command system initialized\n" );
 }
 
