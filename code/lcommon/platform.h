@@ -1,21 +1,15 @@
 /* LAIR PLATFORM HEADER - platform.h */
 
-
 #ifndef __LAIR_PLATFORM_H__
 #define __LAIR_PLATFORM_H__
 
-
-
 #include "l_shared.h"
-
-
 
 /*
  ======================================
-            SYSTEM ( Sys_ )
+			SYSTEM ( Sys_ )
  ======================================
 */
-
 
 int Sys_Init( void );
 
@@ -27,14 +21,11 @@ void Sys_Error( const char *msg );
 
 u64 Sys_GetMilliseconds( void );
 
-
-
 /*
  ======================================
-            NETWORK ( Net_ )
+			NETWORK ( Net_ )
  ======================================
 */
-
 
 const char *Net_ErrorString( void );
 
@@ -58,6 +49,4 @@ int Net_Recv( lsocket sock, byte *buf, usize buflen );
 
 void Net_Close( lsocket sock );
 
-
-
-#endif             /* __LAIR_PLATFORM_H__ END */
+#endif /* __LAIR_PLATFORM_H__ END */

@@ -66,9 +66,15 @@ endif()
 if(LAIR_BUILD_CLIENT_TUI)
     # add_subdirectory(code/client-tui)
     add_executable(lair_client
-        code/client/main.cpp
+        code/client-tui/main.cpp
+        code/client-tui/tui.cpp
         code/client/cl_main.cpp
     )
-    target_include_directories(lair_client PRIVATE code/client)
-    target_link_libraries(lair_client lair_common lair_platform)
+    target_include_directories(lair_client PRIVATE 
+        code/client-tui
+        code/client
+    )
+    find_package(Curses REQUIRED)
+    target_link_libraries(lair_client lair_common lair_platform ${CURSES_LIBRARIES})
+    target_include_directories(lair_client PRIVATE ${CURSES_INCLUDE_DIR})
 endif()

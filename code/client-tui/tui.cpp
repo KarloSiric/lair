@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-25 09:59:38
    Last Modified by: ksiric
-   Last Modified: 2026-02-25 11:24:31
+   Last Modified: 2026-02-25 11:36:43
    ---------------------------------------------------------------------
    Description:
        
@@ -73,5 +73,23 @@ void TUI_DrawChatWindow( void ) {
     return ;
 } 
 
-
+lboolean TUI_HandleInput( void ) {
+    int ch;
+    
+    ch = wgetch( input_win );
+    
+    if ( ch == ERR ) {
+        // nothing being pressed at all
+        return ltrue;
+    }
+    
+    if ( ch == 'q' ) {
+        // for quitting the application for now TEST
+        return lfalse;
+    }
+    
+    // we will handle other keys here as well, probably better to do it witha. switch statement but we will see
+    
+    return ltrue;
+}
 
