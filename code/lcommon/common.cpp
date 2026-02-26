@@ -49,11 +49,9 @@ void Com_Error( lerror_t level, const char *fmt, ... ) {
 	// TODO (Karlo ): Need to handle the the other ERR enums once we start implementing them so
 
 	/*
-
-
-
-
-
+    
+        
+    
 	*/
 }
 

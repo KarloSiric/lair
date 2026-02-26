@@ -3,6 +3,12 @@
 
 #include "l_shared.h"
 
+typedef enum {
+    STATE_CONNECT,
+    STATE_NAME,
+    STATE_CHAT
+} tuistate_t;
+
 void TUI_Init();
 void TUI_Shutdown();
 void TUI_DrawStatusBar();

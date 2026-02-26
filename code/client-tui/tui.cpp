@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-25 09:59:38
    Last Modified by: ksiric
-   Last Modified: 2026-02-25 11:36:43
+   Last Modified: 2026-02-26 00:35:23
    ---------------------------------------------------------------------
    Description:
        
@@ -20,6 +20,8 @@
 
 static int rows;
 static int cols;
+
+static tuistate_t tui_state = STATE_CONNECT;
 
 static WINDOW *main_win;
 static WINDOW *status_win;
@@ -44,7 +46,7 @@ void TUI_Init( void ) {
 void TUI_Shutdown( void ) {
     delwin( status_win );
     delwin( chat_win );
-    delwin( input_win );
+    delwin( input_win ); 
     endwin();
     
     return ;
