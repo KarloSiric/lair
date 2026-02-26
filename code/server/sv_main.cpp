@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-16 01:36:42
    Last Modified by: ksiric
-   Last Modified: 2026-02-25 17:10:30
+   Last Modified: 2026-02-26 18:02:07
    ---------------------------------------------------------------------
    Description:
 
@@ -88,22 +88,17 @@ void SV_Frame( void ) {
 
 	if ( FD_ISSET( sv.socket, &readfds ) ) {
 		clientsocket = Net_Accept( sv.socket );
-
 		if ( clientsocket != INVALID_SOCKET_HANDLE ) {
 			clientnum = SV_FindFreeClientSlot();
-
 			if ( clientnum == -1 ) {
 				Com_Printf( "Server full, rejecting client\n" );
 				Net_Close( clientsocket );
-
 			} else {
 				sv.clients[clientnum].active = ltrue;
 				sv.clients[clientnum].socket = clientsocket;
 				sv.clients[clientnum].status = STATUS_ONLINE;
 				sv.numclients++;
-                
                 Com_Printf( "Client %d connected (awaiting identification)\n", clientnum );
-                
 			}
 		}
 	}
