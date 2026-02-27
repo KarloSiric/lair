@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-25 09:59:38
    Last Modified by: ksiric
-   Last Modified: 2026-02-27 19:58:00
+   Last Modified: 2026-02-27 23:03:48
    ---------------------------------------------------------------------
    Description:
 
@@ -16,7 +16,6 @@
 																	   */
 #include "tui.h"
 #include "client.h"
-#include <ncurses.h>
 #include <string.h>
 #include <time.h>
 
@@ -42,6 +41,8 @@ static size_t chat_input_len;
 
 static chatmsg_t chat_messages[MAX_CHAT_MESSAGES];
 static int chat_message_count = 0;
+
+static lboolean colors_initialized = lfalse;
 
 static WINDOW *main_win;
 static WINDOW *status_win;
@@ -141,13 +142,12 @@ void TUI_DrawChatWindow( void ) {
 	getmaxyx( chat_win, win_h, win_w );
 	werase( chat_win );
 	box( chat_win, 0, 0 );
-
+    
 	visible_messages = win_h - 2;
-
+    
 	if ( chat_message_count > visible_messages ) {
 		message_start = chat_message_count - visible_messages;
 	}
-
 	for ( int i = message_start; i < chat_message_count && line < win_h - 1; i++ ) {
 		msg = &chat_messages[i];
 		mvwprintw( chat_win, line, 2, "%s %s: %s",
@@ -156,7 +156,6 @@ void TUI_DrawChatWindow( void ) {
 	}
 
 	wrefresh( chat_win );
-
 	return;
 }
 
@@ -459,4 +458,20 @@ void TUI_AddChatMessage( const char *sender, const char *text ) {
 	snprintf( msg->timestamp, sizeof( msg->timestamp ), "[%02d:%02d:%02d]", t->tm_hour, t->tm_min, t->tm_sec );
 
 	chat_message_count++;
+}
+
+void TUI_InitColors( void ) {
+    if ( !has_colors() ) {
+        return ;
+    }
+    
+    start_color();
+    use_default_colors();
+    
+    
+    
+    
+    
+    
+    
 }
