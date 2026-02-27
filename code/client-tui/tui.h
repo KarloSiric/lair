@@ -26,7 +26,6 @@ typedef struct {
     char timestamp[16];
 } chatmsg_t;
 
-
 void TUI_Init();
 void TUI_Shutdown();
 

@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-25 09:59:38
    Last Modified by: ksiric
-   Last Modified: 2026-02-27 01:47:06
+   Last Modified: 2026-02-27 17:37:16
    ---------------------------------------------------------------------
    Description:
 
@@ -61,10 +61,10 @@ void TUI_Init( void ) {
 	getmaxyx( main_win, rows, cols ); // used to make the terminal ncurses look match the size of the terminal window
 
 	int con_y = ( rows - CONNECT_WIN_HEIGHT ) / 2;
-	int con_x = ( rows - CONNECT_WIN_WIDTH ) / 2;
+	int con_x = ( cols - CONNECT_WIN_WIDTH ) / 2;
 
 	int quit_y = ( rows - QUIT_WIN_HEIGHT ) / 2;
-	int quit_x = ( rows - QUIT_WIN_WIDTH ) / 2;
+	int quit_x = ( cols - QUIT_WIN_WIDTH ) / 2;
 
 	int name_y = ( rows - NAME_WIN_HEIGHT ) / 2;
 	int name_x = ( cols - NAME_WIN_WIDTH ) / 2;
@@ -124,10 +124,31 @@ void TUI_DrawInputLine( void ) {
 }
 
 void TUI_DrawChatWindow( void ) {
-	werase( chat_win );
-	wrefresh( chat_win );
-
-	return;
+    int win_h, win_w;
+    int visible_messages = 0;
+    int message_start = 0;
+    int line = 1;
+    chatmsg_t *msg;
+    getmaxyx( chat_win, win_h, win_w );   
+    werase( chat_win );
+    box( chat_win, 0, 0 );
+    
+    visible_messages = win_h - 2;
+    
+    if ( chat_message_count > visible_messages ) {
+        message_start = chat_message_count - visible_messages;
+    }
+    
+    for ( int i = message_start; i < chat_message_count && line < win_h - 1; i++ ) {
+        msg = &chat_messages[i];
+        mvwprintw( chat_win, line, 2, "[%s] %s: %s",
+                   msg->timestamp, msg->sender, msg->text );
+        line++;
+    }   
+    
+    wrefresh( chat_win );
+    
+    return ;
 }
 
 lboolean TUI_HandleInput( void ) {
@@ -333,6 +354,8 @@ void TUI_HandleNameInput( void ) {
 			// We will validate here with another function for checking the name itself
 			if ( TUI_HandleNameValidation() ) {
 				CL_SendConnect( username );
+                clear();
+                refresh();
 				tui_state = STATE_CHAT;
 			} else {
 				show_name_error = ltrue;
