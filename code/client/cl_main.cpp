@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-17 01:17:55
    Last Modified by: ksiric
-   Last Modified: 2026-02-24 21:06:44
+   Last Modified: 2026-02-27 01:27:06
    ---------------------------------------------------------------------
    Description:
 
@@ -22,6 +22,7 @@
 #include <sys/select.h>
 
 cl_client_t cl;
+chatcallback_t CL_ChatCallback = NULL;
 
 void CL_Init( void ) {
 	memset( &cl, 0, sizeof( cl ) );
@@ -160,7 +161,12 @@ void CL_ReadServerMessages( void ) {
 		strncpy( text, MSG_ReadString( &msg ), MAX_STRING_CHARS - 1 );
 		text[MAX_STRING_CHARS - 1] = '\0';
 
-		Com_Printf( "~%s: %s\n", name, text );
+        if ( CL_ChatCallback ) {
+            CL_ChatCallback( name, text );
+        } else {
+               
+        	Com_Printf( "~%s: %s\n", name, text );
+        }
 		break;
 	}
 

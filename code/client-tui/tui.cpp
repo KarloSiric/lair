@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-25 09:59:38
    Last Modified by: ksiric
-   Last Modified: 2026-02-27 00:43:37
+   Last Modified: 2026-02-27 01:47:06
    ---------------------------------------------------------------------
    Description:
 
@@ -18,6 +18,7 @@
 #include "client.h"
 #include <ncurses.h>
 #include <string.h>
+#include <time.h>
 
 static int rows;
 static int cols;
@@ -38,6 +39,9 @@ static lboolean show_name_error = lfalse;
 
 static char chat_input[512];
 static size_t chat_input_len;
+
+static chatmsg_t chat_messages[MAX_CHAT_MESSAGES];
+static int chat_message_count = 0;
 
 static WINDOW *main_win;
 static WINDOW *status_win;
@@ -396,4 +400,31 @@ lboolean TUI_Frame( void ) {
 	}
 
 	return tui_running;
+}
+
+void TUI_AddChatMessage( const char *sender, const char *text ) {
+    time_t now;
+    struct tm *t;
+    chatmsg_t *msg;
+    
+    if ( chat_message_count >= MAX_CHAT_MESSAGES ) {
+        for ( int i = 0; i < MAX_CHAT_MESSAGES - 1; i++ ) {
+            chat_messages[i] = chat_messages[i + 1];
+        }
+        
+        chat_message_count = MAX_CHAT_MESSAGES - 1;
+    }
+    msg = &chat_messages[chat_message_count];
+    
+    strncpy( msg->sender, sender, MAX_USERNAME - 1 );
+    msg->sender[MAX_USERNAME - 1] = '\0';
+    
+    strncpy( msg->text, text, MAX_STRING_CHARS - 1);
+    msg->text[MAX_STRING_CHARS - 1] = '\0';
+    
+    now = time( NULL );
+    t = localtime( &now );
+    snprintf( msg->timestamp, sizeof( msg->timestamp ), "[%02d:%02d]", t->tm_hour, t->tm_min );
+    
+    chat_message_count++;
 }

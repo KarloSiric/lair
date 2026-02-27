@@ -14,6 +14,10 @@ typedef struct {
 	char       name[MAX_USERNAME];         // Username
 } cl_client_t;
 
+typedef void (*chatcallback_t)( const char *sender, const char *text );
+
+extern chatcallback_t CL_ChatCallback;
+
 extern cl_client_t cl;
 
 void CL_Init( void );
