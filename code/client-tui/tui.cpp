@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-25 09:59:38
    Last Modified by: ksiric
-   Last Modified: 2026-02-27 19:18:30
+   Last Modified: 2026-02-27 19:58:00
    ---------------------------------------------------------------------
    Description:
 
@@ -54,11 +54,12 @@ static WINDOW *name_win;
 void TUI_Init( void ) {
 	initscr(); // initializing the ncurses library
 	main_win = stdscr;
+    keypad( main_win, TRUE ); 
 	cbreak(); // used for line breaking, to make the TUI responsive
 	noecho(); // no echo used for controlling what gets printed
-	nodelay( main_win, TRUE );
-	keypad( main_win, TRUE ); // allows us to have special characters from the keypad
-	getmaxyx( main_win, rows, cols ); // used to make the terminal ncurses look match the size of the terminal window
+    wtimeout( main_win, 50 );
+    
+    getmaxyx( main_win, rows, cols ); // used to make the terminal ncurses look match the size of the terminal window
 
 	int con_y = ( rows - CONNECT_WIN_HEIGHT ) / 2;
 	int con_x = ( cols - CONNECT_WIN_WIDTH ) / 2;
@@ -72,13 +73,21 @@ void TUI_Init( void ) {
 	status_win = newwin( 1, cols, 0, 0 ); // status window creation
 	chat_win = newwin( rows - 2, cols, 1, 0 ); // chat window creation
 	input_win = newwin( 1, cols, rows - 1, 0 ); // input window creation
+    keypad( input_win, TRUE );
+    wtimeout( input_win, 50 );
 
 	connect_win = newwin( CONNECT_WIN_HEIGHT, CONNECT_WIN_WIDTH, con_y, con_x );
+    keypad( connect_win, TRUE );
+    wtimeout( connect_win, 50 );
 
 	quit_win = newwin( QUIT_WIN_HEIGHT, QUIT_WIN_WIDTH, quit_y, quit_x );
+    keypad( quit_win, TRUE );
+    wtimeout( quit_win, 50 );
 
 	name_win = newwin( NAME_WIN_HEIGHT, NAME_WIN_WIDTH, name_y, name_x );
-
+    keypad( name_win, TRUE );
+    wtimeout( name_win, 50 );
+    
 	scrollok( chat_win, TRUE ); // enables scrolling in the chat window, to see history of messages and so forth
 
 	// Initializing the chat input and all
@@ -141,7 +150,7 @@ void TUI_DrawChatWindow( void ) {
 
 	for ( int i = message_start; i < chat_message_count && line < win_h - 1; i++ ) {
 		msg = &chat_messages[i];
-		mvwprintw( chat_win, line, 2, "[%s] %s: %s",
+		mvwprintw( chat_win, line, 2, "%s %s: %s",
 				   msg->timestamp, msg->sender, msg->text );
 		line++;
 	}
@@ -153,7 +162,6 @@ void TUI_DrawChatWindow( void ) {
 
 lboolean TUI_HandleInput( void ) {
 	int ch = wgetch( input_win );
-
 	if ( ch == ERR ) {
 		return ltrue;
 	}
@@ -187,10 +195,10 @@ lboolean TUI_HandleInput( void ) {
 void TUI_DrawConnectScreen( void ) {
 	werase( connect_win );
 	box( connect_win, 0, 0 );
-
+    
 	mvwprintw( connect_win, 2, 8, "W E L C O M E   T O " );
 	mvwprintw( connect_win, 3, 14, "L A I R " );
-
+    
 	// Server field
 	mvwprintw( connect_win, 5, 4, "Server:" );
 	mvwprintw( connect_win, 5, 12, "[                        ]" );
@@ -222,7 +230,7 @@ void TUI_DrawConnectScreen( void ) {
 void TUI_HandleConnectScreenInput( void ) {
 	int ch;
 	int len;
-
+    
 	ch = wgetch( connect_win );
 	if ( ch == ERR ) {
 		return;
@@ -289,13 +297,18 @@ void TUI_DrawPromptQuitScreen( void ) {
 
 	mvwprintw( quit_win, 4, 14, "[ NO ]" );
 	wattroff( quit_win, A_REVERSE );
-
+    
 	wrefresh( quit_win );
 }
 
 void TUI_HandleQuitInput( void ) {
 	int ch;
 	ch = wgetch( quit_win );
+    
+    if ( ch == ERR ) {
+        return ;
+    }
+    
 	if ( ch == '\t' || ch == KEY_RIGHT || ch == KEY_LEFT ) {
 		quit_selection = ( quit_selection == 0 ) ? 1 : 0;
 	} else if ( ch == '\n' || ch == KEY_ENTER ) {
@@ -303,7 +316,6 @@ void TUI_HandleQuitInput( void ) {
 		if ( quit_selection == 0 ) {
 			tui_running = lfalse;
 		}
-		tui_running = ltrue; // redundant perhaps
 		show_quit_prompt = lfalse;
 	} else if ( ch == 27 ) {
 		show_quit_prompt = lfalse;
@@ -392,6 +404,7 @@ lboolean TUI_HandleNameValidation( void ) {
 
 lboolean TUI_Frame( void ) {
 	if ( show_quit_prompt ) {
+        flushinp();
 		TUI_DrawPromptQuitScreen();
 		TUI_HandleQuitInput();
 		return tui_running;
