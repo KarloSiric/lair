@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-17 17:02:56
    Last Modified by: ksiric
-   Last Modified: 2026-02-25 09:55:07
+   Last Modified: 2026-02-27 17:46:35
    ---------------------------------------------------------------------
    Description:
 
@@ -125,7 +125,7 @@ void Cmd_Init( void ) {
 	cmd_list = NULL;
 	cmd_buffer_len = 0;
 	cmd_buffer[0] = '\0';
-    
+
 	Com_Printf( "Command system initialized\n" );
 }
 
@@ -218,64 +218,64 @@ void Cmd_ExecuteString( const char *text ) {
 }
 
 void Cbuf_Init( void ) {
-    cmd_buffer[0] = '\0';
-    cmd_buffer_len = 0;
-    
-    return ;
+	cmd_buffer[0] = '\0';
+	cmd_buffer_len = 0;
+
+	return;
 }
 
 void Cbuf_AddText( const char *text ) {
-    size_t textLen = strlen( text );
-    
-    if ( cmd_buffer_len + textLen >= MAX_CMD_BUFFER ) {
-        Com_Printf( "Cbuf_AddText: buffer overflow\n" );
-        return ;
-    }
-    
-    memcpy( cmd_buffer + cmd_buffer_len, text, textLen + 1 );
-    cmd_buffer_len += textLen;
-    
-    return ;
+	size_t textLen = strlen( text );
+
+	if ( cmd_buffer_len + textLen >= MAX_CMD_BUFFER ) {
+		Com_Printf( "Cbuf_AddText: buffer overflow\n" );
+		return;
+	}
+
+	memcpy( cmd_buffer + cmd_buffer_len, text, textLen + 1 );
+	cmd_buffer_len += textLen;
+
+	return;
 }
 
 void Cbuf_InsertText( const char *text ) {
-    size_t textLen = strlen( text );
-    
-    char *cmdptr = cmd_buffer;
-    
-    if ( cmd_buffer_len + textLen >= MAX_CMD_BUFFER ) {
-        Com_Printf( "Cbuf_InsertText: buffer overflow\n" );
-        return ;
-    }
-    
-    memmove( cmd_buffer + textLen, cmd_buffer, cmd_buffer_len + 1 );
-    
-    memcpy( cmdptr, text, textLen );
-    
-    cmd_buffer_len += textLen;
-    
-    return ;
+	size_t textLen = strlen( text );
+
+	char *cmdptr = cmd_buffer;
+
+	if ( cmd_buffer_len + textLen >= MAX_CMD_BUFFER ) {
+		Com_Printf( "Cbuf_InsertText: buffer overflow\n" );
+		return;
+	}
+
+	memmove( cmd_buffer + textLen, cmd_buffer, cmd_buffer_len + 1 );
+
+	memcpy( cmdptr, text, textLen );
+
+	cmd_buffer_len += textLen;
+
+	return;
 }
 
 void Cbuf_Execute( void ) {
-    char *trackPos = cmd_buffer;
-    char *trackWord = cmd_buffer;
-    
-    while ( *trackPos != '\0' ) {
-        // @TODO(KARLO): Need to find
-        if ( *trackPos == '\n' || *trackPos == ';' ) {
-            *trackPos = '\0';
-            Cmd_ExecuteString( trackWord );
-            trackWord = trackPos + 1;           
-        }
-        trackPos++;
-    }
-    if ( trackWord != trackPos ) {
-        Cmd_ExecuteString( trackWord );   
-    }
-    
-    cmd_buffer_len = 0;
-    cmd_buffer[0] = '\0';
-    
-    return ;
+	char *trackPos = cmd_buffer;
+	char *trackWord = cmd_buffer;
+
+	while ( *trackPos != '\0' ) {
+		// @TODO(KARLO): Need to find
+		if ( *trackPos == '\n' || *trackPos == ';' ) {
+			*trackPos = '\0';
+			Cmd_ExecuteString( trackWord );
+			trackWord = trackPos + 1;
+		}
+		trackPos++;
+	}
+	if ( trackWord != trackPos ) {
+		Cmd_ExecuteString( trackWord );
+	}
+
+	cmd_buffer_len = 0;
+	cmd_buffer[0] = '\0';
+
+	return;
 }

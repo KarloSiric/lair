@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-25 09:59:38
    Last Modified by: ksiric
-   Last Modified: 2026-02-27 17:37:16
+   Last Modified: 2026-02-27 19:18:30
    ---------------------------------------------------------------------
    Description:
 
@@ -56,7 +56,7 @@ void TUI_Init( void ) {
 	main_win = stdscr;
 	cbreak(); // used for line breaking, to make the TUI responsive
 	noecho(); // no echo used for controlling what gets printed
-    nodelay( main_win, TRUE );
+	nodelay( main_win, TRUE );
 	keypad( main_win, TRUE ); // allows us to have special characters from the keypad
 	getmaxyx( main_win, rows, cols ); // used to make the terminal ncurses look match the size of the terminal window
 
@@ -80,11 +80,11 @@ void TUI_Init( void ) {
 	name_win = newwin( NAME_WIN_HEIGHT, NAME_WIN_WIDTH, name_y, name_x );
 
 	scrollok( chat_win, TRUE ); // enables scrolling in the chat window, to see history of messages and so forth
-    
-    // Initializing the chat input and all
-    chat_input[0] = '\0';
-    chat_input_len = 0;
-    
+
+	// Initializing the chat input and all
+	chat_input[0] = '\0';
+	chat_input_len = 0;
+
 	tui_running = ltrue;
 	refresh();
 
@@ -124,66 +124,64 @@ void TUI_DrawInputLine( void ) {
 }
 
 void TUI_DrawChatWindow( void ) {
-    int win_h, win_w;
-    int visible_messages = 0;
-    int message_start = 0;
-    int line = 1;
-    chatmsg_t *msg;
-    getmaxyx( chat_win, win_h, win_w );   
-    werase( chat_win );
-    box( chat_win, 0, 0 );
-    
-    visible_messages = win_h - 2;
-    
-    if ( chat_message_count > visible_messages ) {
-        message_start = chat_message_count - visible_messages;
-    }
-    
-    for ( int i = message_start; i < chat_message_count && line < win_h - 1; i++ ) {
-        msg = &chat_messages[i];
-        mvwprintw( chat_win, line, 2, "[%s] %s: %s",
-                   msg->timestamp, msg->sender, msg->text );
-        line++;
-    }   
-    
-    wrefresh( chat_win );
-    
-    return ;
+	int win_h, win_w;
+	int visible_messages = 0;
+	int message_start = 0;
+	int line = 1;
+	chatmsg_t *msg;
+	getmaxyx( chat_win, win_h, win_w );
+	werase( chat_win );
+	box( chat_win, 0, 0 );
+
+	visible_messages = win_h - 2;
+
+	if ( chat_message_count > visible_messages ) {
+		message_start = chat_message_count - visible_messages;
+	}
+
+	for ( int i = message_start; i < chat_message_count && line < win_h - 1; i++ ) {
+		msg = &chat_messages[i];
+		mvwprintw( chat_win, line, 2, "[%s] %s: %s",
+				   msg->timestamp, msg->sender, msg->text );
+		line++;
+	}
+
+	wrefresh( chat_win );
+
+	return;
 }
 
 lboolean TUI_HandleInput( void ) {
-    int ch = wgetch( input_win );
-    
-    if ( ch == ERR ) {
-        return ltrue;
-    }
-    if ( ch == 27 ) {
-        show_quit_prompt = ltrue;
-        return ltrue;
-    }   
-    else if ( ch == '\n' || ch == KEY_ENTER ) {
-        if ( chat_input_len > 0 ) {
-            CL_SendChat( chat_input );
-            chat_input[0] = '\0';
-            chat_input_len = 0;
-        }   
-    }
-    else if ( ch == KEY_BACKSPACE || ch == 127 ) {
-        if ( chat_input_len > 0 ) {
-            chat_input_len--;
-            chat_input[chat_input_len] = '\0';
-        }
-    }
-    
-    else if ( ch >= 32 && ch <= 126 ) {
-        if ( chat_input_len < 255 ) {
-            chat_input[chat_input_len] = ch;
-            chat_input_len++;
-            chat_input[chat_input_len] = '\0';
-        }
-    }
-    
-    return ltrue;
+	int ch = wgetch( input_win );
+
+	if ( ch == ERR ) {
+		return ltrue;
+	}
+	if ( ch == 27 ) {
+		show_quit_prompt = ltrue;
+		return ltrue;
+	} else if ( ch == '\n' || ch == KEY_ENTER ) {
+		if ( chat_input_len > 0 ) {
+			CL_SendChat( chat_input );
+			chat_input[0] = '\0';
+			chat_input_len = 0;
+		}
+	} else if ( ch == KEY_BACKSPACE || ch == 127 ) {
+		if ( chat_input_len > 0 ) {
+			chat_input_len--;
+			chat_input[chat_input_len] = '\0';
+		}
+	}
+
+	else if ( ch >= 32 && ch <= 126 ) {
+		if ( chat_input_len < 255 ) {
+			chat_input[chat_input_len] = ch;
+			chat_input_len++;
+			chat_input[chat_input_len] = '\0';
+		}
+	}
+
+	return ltrue;
 }
 
 void TUI_DrawConnectScreen( void ) {
@@ -231,7 +229,7 @@ void TUI_HandleConnectScreenInput( void ) {
 	}
 
 	// switched the fields itself right
-	if ( ch == '\t' ) {
+	if ( ch == '\t' || ch == KEY_UP || ch == KEY_DOWN ) {
 		connect_field = ( connect_field == 0 ) ? 1 : 0;
 	}
 	if ( ch == 27 ) {
@@ -297,9 +295,7 @@ void TUI_DrawPromptQuitScreen( void ) {
 
 void TUI_HandleQuitInput( void ) {
 	int ch;
-
 	ch = wgetch( quit_win );
-
 	if ( ch == '\t' || ch == KEY_RIGHT || ch == KEY_LEFT ) {
 		quit_selection = ( quit_selection == 0 ) ? 1 : 0;
 	} else if ( ch == '\n' || ch == KEY_ENTER ) {
@@ -354,8 +350,8 @@ void TUI_HandleNameInput( void ) {
 			// We will validate here with another function for checking the name itself
 			if ( TUI_HandleNameValidation() ) {
 				CL_SendConnect( username );
-                clear();
-                refresh();
+				clear();
+				refresh();
 				tui_state = STATE_CHAT;
 			} else {
 				show_name_error = ltrue;
@@ -426,28 +422,28 @@ lboolean TUI_Frame( void ) {
 }
 
 void TUI_AddChatMessage( const char *sender, const char *text ) {
-    time_t now;
-    struct tm *t;
-    chatmsg_t *msg;
-    
-    if ( chat_message_count >= MAX_CHAT_MESSAGES ) {
-        for ( int i = 0; i < MAX_CHAT_MESSAGES - 1; i++ ) {
-            chat_messages[i] = chat_messages[i + 1];
-        }
-        
-        chat_message_count = MAX_CHAT_MESSAGES - 1;
-    }
-    msg = &chat_messages[chat_message_count];
-    
-    strncpy( msg->sender, sender, MAX_USERNAME - 1 );
-    msg->sender[MAX_USERNAME - 1] = '\0';
-    
-    strncpy( msg->text, text, MAX_STRING_CHARS - 1);
-    msg->text[MAX_STRING_CHARS - 1] = '\0';
-    
-    now = time( NULL );
-    t = localtime( &now );
-    snprintf( msg->timestamp, sizeof( msg->timestamp ), "[%02d:%02d]", t->tm_hour, t->tm_min );
-    
-    chat_message_count++;
+	time_t now;
+	struct tm *t;
+	chatmsg_t *msg;
+
+	if ( chat_message_count >= MAX_CHAT_MESSAGES ) {
+		for ( int i = 0; i < MAX_CHAT_MESSAGES - 1; i++ ) {
+			chat_messages[i] = chat_messages[i + 1];
+		}
+
+		chat_message_count = MAX_CHAT_MESSAGES - 1;
+	}
+	msg = &chat_messages[chat_message_count];
+
+	strncpy( msg->sender, sender, MAX_USERNAME - 1 );
+	msg->sender[MAX_USERNAME - 1] = '\0';
+
+	strncpy( msg->text, text, MAX_STRING_CHARS - 1 );
+	msg->text[MAX_STRING_CHARS - 1] = '\0';
+
+	now = time( NULL );
+	t = localtime( &now );
+	snprintf( msg->timestamp, sizeof( msg->timestamp ), "[%02d:%02d:%02d]", t->tm_hour, t->tm_min, t->tm_sec );
+
+	chat_message_count++;
 }
