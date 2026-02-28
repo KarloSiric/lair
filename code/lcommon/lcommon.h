@@ -15,7 +15,7 @@ COMMON FUNCTIONS (lcommon.h)
 void Com_Printf( const char *fmt, ... );
 void Com_DPrintf( const char *fmt, ... );
 /* Errors */
-void Com_Error( lerror_t level, const char *fmt, ... );
+void Com_Error( error_t level, const char *fmt, ... );
 /* Initialization */
 void Com_Init( void );
 void Com_Shutdown( void );

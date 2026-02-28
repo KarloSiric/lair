@@ -99,7 +99,7 @@ typedef enum {
     ERR_DISCONNECT,
     ERR_TIMEOUT,
     ERR_AUTH
-} lerror_t;
+} error_t;
 
 typedef enum {
     lfalse,

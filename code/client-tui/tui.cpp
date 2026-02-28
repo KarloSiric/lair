@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-25 09:59:38
    Last Modified by: ksiric
-   Last Modified: 2026-02-27 23:03:48
+   Last Modified: 2026-02-28 22:47:42
    ---------------------------------------------------------------------
    Description:
 
@@ -55,12 +55,12 @@ static WINDOW *name_win;
 void TUI_Init( void ) {
 	initscr(); // initializing the ncurses library
 	main_win = stdscr;
-    keypad( main_win, TRUE ); 
+	keypad( main_win, TRUE );
 	cbreak(); // used for line breaking, to make the TUI responsive
 	noecho(); // no echo used for controlling what gets printed
-    wtimeout( main_win, 50 );
-    
-    getmaxyx( main_win, rows, cols ); // used to make the terminal ncurses look match the size of the terminal window
+	wtimeout( main_win, 50 );
+
+	getmaxyx( main_win, rows, cols ); // used to make the terminal ncurses look match the size of the terminal window
 
 	int con_y = ( rows - CONNECT_WIN_HEIGHT ) / 2;
 	int con_x = ( cols - CONNECT_WIN_WIDTH ) / 2;
@@ -74,21 +74,21 @@ void TUI_Init( void ) {
 	status_win = newwin( 1, cols, 0, 0 ); // status window creation
 	chat_win = newwin( rows - 2, cols, 1, 0 ); // chat window creation
 	input_win = newwin( 1, cols, rows - 1, 0 ); // input window creation
-    keypad( input_win, TRUE );
-    wtimeout( input_win, 50 );
+	keypad( input_win, TRUE );
+	wtimeout( input_win, 50 );
 
 	connect_win = newwin( CONNECT_WIN_HEIGHT, CONNECT_WIN_WIDTH, con_y, con_x );
-    keypad( connect_win, TRUE );
-    wtimeout( connect_win, 50 );
+	keypad( connect_win, TRUE );
+	wtimeout( connect_win, 50 );
 
 	quit_win = newwin( QUIT_WIN_HEIGHT, QUIT_WIN_WIDTH, quit_y, quit_x );
-    keypad( quit_win, TRUE );
-    wtimeout( quit_win, 50 );
+	keypad( quit_win, TRUE );
+	wtimeout( quit_win, 50 );
 
 	name_win = newwin( NAME_WIN_HEIGHT, NAME_WIN_WIDTH, name_y, name_x );
-    keypad( name_win, TRUE );
-    wtimeout( name_win, 50 );
-    
+	keypad( name_win, TRUE );
+	wtimeout( name_win, 50 );
+
 	scrollok( chat_win, TRUE ); // enables scrolling in the chat window, to see history of messages and so forth
 
 	// Initializing the chat input and all
@@ -142,9 +142,9 @@ void TUI_DrawChatWindow( void ) {
 	getmaxyx( chat_win, win_h, win_w );
 	werase( chat_win );
 	box( chat_win, 0, 0 );
-    
+
 	visible_messages = win_h - 2;
-    
+
 	if ( chat_message_count > visible_messages ) {
 		message_start = chat_message_count - visible_messages;
 	}
@@ -194,10 +194,10 @@ lboolean TUI_HandleInput( void ) {
 void TUI_DrawConnectScreen( void ) {
 	werase( connect_win );
 	box( connect_win, 0, 0 );
-    
+
 	mvwprintw( connect_win, 2, 8, "W E L C O M E   T O " );
 	mvwprintw( connect_win, 3, 14, "L A I R " );
-    
+
 	// Server field
 	mvwprintw( connect_win, 5, 4, "Server:" );
 	mvwprintw( connect_win, 5, 12, "[                        ]" );
@@ -229,7 +229,7 @@ void TUI_DrawConnectScreen( void ) {
 void TUI_HandleConnectScreenInput( void ) {
 	int ch;
 	int len;
-    
+
 	ch = wgetch( connect_win );
 	if ( ch == ERR ) {
 		return;
@@ -288,26 +288,23 @@ void TUI_DrawPromptQuitScreen( void ) {
 
 	mvwprintw( quit_win, 4, 4, "[ YES ]" );
 	wattroff( quit_win, A_REVERSE );
-
 	// NO Button
 	if ( quit_selection == 1 ) {
 		wattron( quit_win, A_REVERSE );
 	}
-
 	mvwprintw( quit_win, 4, 14, "[ NO ]" );
 	wattroff( quit_win, A_REVERSE );
-    
 	wrefresh( quit_win );
 }
 
 void TUI_HandleQuitInput( void ) {
 	int ch;
 	ch = wgetch( quit_win );
-    
-    if ( ch == ERR ) {
-        return ;
-    }
-    
+
+	if ( ch == ERR ) {
+		return;
+	}
+
 	if ( ch == '\t' || ch == KEY_RIGHT || ch == KEY_LEFT ) {
 		quit_selection = ( quit_selection == 0 ) ? 1 : 0;
 	} else if ( ch == '\n' || ch == KEY_ENTER ) {
@@ -403,7 +400,7 @@ lboolean TUI_HandleNameValidation( void ) {
 
 lboolean TUI_Frame( void ) {
 	if ( show_quit_prompt ) {
-        flushinp();
+		flushinp();
 		TUI_DrawPromptQuitScreen();
 		TUI_HandleQuitInput();
 		return tui_running;
@@ -461,12 +458,25 @@ void TUI_AddChatMessage( const char *sender, const char *text ) {
 }
 
 void TUI_InitColors( void ) {
-    if ( !has_colors() ) {
-        return ;
-    }
+	if ( !has_colors() ) {
+		return;
+	}
+	start_color();
+	use_default_colors();
+
+	init_pair( COL_STATUS_BAR, COLOR_WHITE, COLOR_BLUE );
+    init_pair( COL_CHAT_SYSTEM, COLOR_GREEN, -1 );
+    init_pair( COL_CHAT_SELF, COLOR_CYAN, -1 );                                 
+    init_pair( COL_CHAT_OTHER, COLOR_WHITE, -1 );                               
+    init_pair( COL_CHAT_TIMESTAMP, COLOR_BLUE, -1 );                            
+    init_pair( COL_INPUT_LINE, COLOR_YELLOW, -1 );                              
+    init_pair( COL_DIALOG_BORDER, COLOR_CYAN, -1 );                             
+    init_pair( COL_DIALOG_TITLE, COLOR_WHITE, -1 );                             
+    init_pair( COL_BUTTON_NORMAL, COLOR_WHITE, -1 );                            
+    init_pair( COL_BUTTON_SELECTED, COLOR_BLACK, COLOR_CYAN );                  
+    init_pair( COL_FIELD_ACTIVE, COLOR_BLACK, COLOR_CYAN );                     
+    init_pair( COL_ERROR, COLOR_RED, -1 );     
     
-    start_color();
-    use_default_colors();
     
     
     
