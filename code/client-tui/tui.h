@@ -50,15 +50,25 @@ DOUBLE-LINE BOX CHARACTERS (Unicode)
 */
 
 #define BOX_CORNER_TL   "\u2554"  // ╔
+
 #define BOX_CORNER_TR   "\u2557"  // ╗
+
 #define BOX_CORNER_BL   "\u255A"  // ╚
+
 #define BOX_CORNER_BR   "\u255D"  // ╝
+
 #define BOX_HORIZ       "\u2550"  // ═
+
 #define BOX_VERT        "\u2551"  // ║
+
 #define BOX_TEE_LEFT    "\u2560"  // ╠
+
 #define BOX_TEE_RIGHT   "\u2563"  // ╣
+
 #define BOX_TEE_TOP     "\u2566"  // ╦
+
 #define BOX_TEE_BOTTOM  "\u2569"  // ╩
+
 #define BOX_CROSS       "\u256C"  // ╬
 
 /*

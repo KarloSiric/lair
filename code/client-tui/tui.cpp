@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-25 09:59:38
    Last Modified by: ksiric
-   Last Modified: 2026-02-28 22:47:42
+   Last Modified: 2026-03-01 00:17:01
    ---------------------------------------------------------------------
    Description:
 
@@ -407,24 +407,24 @@ lboolean TUI_Frame( void ) {
 	}
 
 	switch ( tui_state ) {
-	case STATE_CONNECT: {
-		TUI_DrawConnectScreen();
-		TUI_HandleConnectScreenInput();
-		break;
-	}
-	case STATE_NAME: {
-		TUI_DrawNameScreen();
-		TUI_HandleNameInput();
-		break;
-	}
-	case STATE_CHAT: {
-		TUI_DrawStatusBar();
-		TUI_DrawChatWindow();
-		TUI_DrawInputLine();
-		TUI_HandleInput();
-		CL_Frame();
-		break;
-	}
+    	case STATE_CONNECT: {
+    		TUI_DrawConnectScreen();
+    		TUI_HandleConnectScreenInput();
+    		break;
+    	}
+    	case STATE_NAME: {
+    		TUI_DrawNameScreen();
+    		TUI_HandleNameInput();
+    		break;
+    	}
+    	case STATE_CHAT: {
+    		TUI_DrawStatusBar();
+    		TUI_DrawChatWindow();
+    		TUI_DrawInputLine();
+    		TUI_HandleInput();
+    		CL_Frame();
+    		break;
+    	}
 	}
 
 	return tui_running;
@@ -477,11 +477,28 @@ void TUI_InitColors( void ) {
     init_pair( COL_FIELD_ACTIVE, COLOR_BLACK, COLOR_CYAN );                     
     init_pair( COL_ERROR, COLOR_RED, -1 );     
     
+    colors_initialized = ltrue;   
+}
+
+void TUI_DrawDoubleBox( WINDOW *win, int starty, int startx, int height, int width ) {
+    int endx = startx - ( width - 1 );
+    int endy = starty - ( height - 1 );
     
+    // we need to draw the corners for each and every single box for each and every window we will be making
+    mvwprintw( win, starty, startx, BOX_CORNER_TL );
+    mvwprintw( win, starty, endx, BOX_CORNER_TR );
+    mvwprintw( win, endy, startx, BOX_CORNER_BL );
+    mvwprintw( win, endy, endx, BOX_CORNER_BR );
     
-    
-    
-    
-    
-    
+    // now drawing the horizontal lines for each of these macros
+    // @NOTE( Karlo ): Need to add horizontal lines
+    for ( int x = startx + 1; x < endx; ++x ) {   
+        mvwprintw( win, starty, x, BOX_HORIZ );
+        mvwprintw( win, endy, x, BOX_HORIZ );
+    } 
+    // @NOTE( Karlo ): Vertical lines added
+    for ( int y = starty + 1; y < endy; ++y ) {
+        mvwprintw( win, y, startx, BOX_VERT );
+        mvwprintw( win, y, endx, BOX_VERT );
+    }
 }
