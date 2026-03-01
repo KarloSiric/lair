@@ -31,7 +31,7 @@ void Com_DPrintf( const char *fmt, ... ) {
 	Sys_Print( msg );
 }
 
-void Com_Error( lerror_t level, const char *fmt, ... ) {
+void Com_Error( error_t level, const char *fmt, ... ) {
 	va_list argptr;
 	char msg[MAX_STRING_CHARS];
 
@@ -47,10 +47,9 @@ void Com_Error( lerror_t level, const char *fmt, ... ) {
 	Com_Printf( "ERROR: %s\n", msg );
 
 	// TODO (Karlo ): Need to handle the the other ERR enums once we start implementing them so
-
 	/*
     
-        
+    
     
 	*/
 }
@@ -69,7 +68,6 @@ void Com_Init( void ) {
 
 void Com_Frame( void ) {
 	// TODO( Karlo ): Adding alter, for now keep
-
 	return;
 }
 

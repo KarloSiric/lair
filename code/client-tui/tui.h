@@ -91,6 +91,7 @@ typedef struct {
 
 void TUI_Init( void );
 void TUI_Shutdown( void );
+void TUI_HandleResize( void );
 void TUI_InitColors( void );
 void TUI_DrawDoubleBox( WINDOW *win, int starty, int startx, int height, int width );
 
