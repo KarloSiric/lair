@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-25 09:59:38
    Last Modified by: ksiric
-   Last Modified: 2026-03-01 01:01:31
+   Last Modified: 2026-03-02 22:29:33
    ---------------------------------------------------------------------
    Description:
 
@@ -254,21 +254,35 @@ void TUI_DrawChatWindow( void ) {
 			continue;
 		}
 
+		// Check if system message (sender = "*")
+		int is_system = ( msg->sender[0] == '*' && msg->sender[1] == '\0' );
+
 		// Draw timestamp
 		wattron( chat_win, COLOR_PAIR( COL_CHAT_TIMESTAMP ) );
 		mvwprintw( chat_win, line, 2, "%s ", msg->timestamp );
 		wattroff( chat_win, COLOR_PAIR( COL_CHAT_TIMESTAMP ) );
 
-		// Draw username
-		wattron( chat_win, COLOR_PAIR( COL_CHAT_SELF ) | A_BOLD );
-		wprintw( chat_win, "%s: ", msg->sender );
-		wattroff( chat_win, COLOR_PAIR( COL_CHAT_SELF ) | A_BOLD );
+		// Draw username (green for system, cyan for users)
+		if ( is_system ) {
+			wattron( chat_win, COLOR_PAIR( COL_CHAT_SYSTEM ) | A_BOLD );
+			wprintw( chat_win, "%s ", msg->sender );
+			wattroff( chat_win, COLOR_PAIR( COL_CHAT_SYSTEM ) | A_BOLD );
+		} else {
+			wattron( chat_win, COLOR_PAIR( COL_CHAT_SELF ) | A_BOLD );
+			wprintw( chat_win, "%s: ", msg->sender );
+			wattroff( chat_win, COLOR_PAIR( COL_CHAT_SELF ) | A_BOLD );
+		}
 
 		// Draw message with word wrapping
 		const char *text = msg->text;
 		int remaining = text_len;
 		int line_width = first_line_width;
 		int first = 1;
+
+		// System messages in green
+		if ( is_system ) {
+			wattron( chat_win, COLOR_PAIR( COL_CHAT_SYSTEM ) );
+		}
 
 		while ( remaining > 0 && line < win_h - 1 ) {
 			int chunk = ( remaining > line_width ) ? line_width : remaining;
@@ -290,6 +304,10 @@ void TUI_DrawChatWindow( void ) {
 			text += chunk;
 			remaining -= chunk;
 			if ( remaining > 0 ) line++;
+		}
+
+		if ( is_system ) {
+			wattroff( chat_win, COLOR_PAIR( COL_CHAT_SYSTEM ) );
 		}
 		line++;
 	}
@@ -536,13 +554,22 @@ void TUI_HandleNameInput( void ) {
 			// We will validate here with another function for checking the name itself
 			if ( TUI_HandleNameValidation() ) {
 				CL_SendConnect( username );
+
+				// Hide dialog windows
+				werase( name_win );
+				werase( connect_win );
+				wrefresh( name_win );
+				wrefresh( connect_win );
+
+				// Clear screen and switch state
 				clear();
 				refresh();
-				// Force redraw of chat windows
-				touchwin( status_win );
-				touchwin( chat_win );
-				touchwin( input_win );
 				tui_state = STATE_CHAT;
+
+				// Draw chat UI IMMEDIATELY (don't wait for next frame)
+				TUI_DrawStatusBar();
+				TUI_DrawChatWindow();
+				TUI_DrawInputLine();
 			} else {
 				show_name_error = ltrue;
 				touchwin( name_win );

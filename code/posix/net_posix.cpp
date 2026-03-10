@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-15 17:29:12
    Last Modified by: ksiric
-   Last Modified: 2026-02-25 17:07:23
+   Last Modified: 2026-03-03 11:17:06
    ---------------------------------------------------------------------
    Description:
 
@@ -33,11 +33,11 @@ const char *Net_ErrorString( void ) {
 }
 
 void Net_Init( void ) {
-	// @Note( Karlo ): On POSIX we dont need initialization so we leave it as it is
+	// @NOTE( Karlo ): On POSIX we dont need initialization so we leave it as it is
 }
 
 void Net_Shutdown( void ) {
-	// @Note( Karlo ): Nothing to cleanup so we just leave it
+	// @NOTE( Karlo ): Nothing to cleanup so we just leave it
 }
 
 lsocket Net_Socket( void ) {
@@ -103,7 +103,7 @@ int Net_Connect( lsocket sock, const char *host, u16 port ) {
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons( port );
 
-	// @Note(Karlo): First we try to parse the IP directly, if it fails we fallback to DNS
+	// @NOTE(Karlo): First we try to parse the IP directly, if it fails we fallback to DNS
 	addr.sin_addr.s_addr = inet_addr( host );
 
 	if ( addr.sin_addr.s_addr == INADDR_NONE ) {
@@ -112,7 +112,7 @@ int Net_Connect( lsocket sock, const char *host, u16 port ) {
 			Com_Printf( "ERROR: Net_Connect: couldn't resolve %s\n", host );
 			return ( -1 );
 		}
-
+        
 		addr.sin_addr = *(struct in_addr *)h->h_addr_list[0];
 	}
 
@@ -142,8 +142,7 @@ int Net_Send( lsocket sock, byte *buf, usize buflen ) {
 }
 
 int Net_Recv( lsocket sock, byte *buf, usize buflen ) {
-	// @Note(Karlo): Similar to send, we dont know how many are coming in, if 0 ( con closed )
-
+	// @NOTE(Karlo): Similar to send, we dont know how many are coming in, if 0 ( con closed )
 	ssize_t received;
 
 	received = recv( sock, buf, buflen, 0 );

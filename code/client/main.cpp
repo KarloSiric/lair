@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-17 13:01:51
    Last Modified by: ksiric
-   Last Modified: 2026-02-17 13:02:29
+   Last Modified: 2026-03-01 11:26:02
    ---------------------------------------------------------------------
    Description:
 
@@ -30,7 +30,7 @@ int main( int argc, char const *argv[] ) {
 	CL_Init();
 
 	Com_Printf( "=== Lair Client ===\n" );
-	CL_Connect( "127.0.0.1", DEFAULT_PORT );
+	CL_Connect( DEFAULT_HOST, DEFAULT_PORT );
 
 	if ( !cl.connected ) {
 		return ( 1 );

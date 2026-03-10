@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-16 15:06:21
    Last Modified by: ksiric
-   Last Modified: 2026-02-25 23:36:27
+   Last Modified: 2026-03-02 22:33:50
    ---------------------------------------------------------------------
    Description:
 
@@ -81,10 +81,8 @@ void MSG_WriteString( msg_t *msg, const char *data ) {
 		MSG_WriteByte( msg, 0 );
 		return;
 	}
-
+    
 	size_t datalen = strlen( data ) + 1;
-    
-    
     
 	if ( msg->cursize + (int)datalen > msg->maxsize ) {
 		msg->overflowed = ltrue;

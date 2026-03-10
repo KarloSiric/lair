@@ -120,6 +120,7 @@ LIMITS
 #define MAX_CLIENTS         256
 #define MAX_ROOMS           64
 #define DEFAULT_PORT        7331
+#define DEFAULT_HOST        "127.0.0.1"
 
 
 /*

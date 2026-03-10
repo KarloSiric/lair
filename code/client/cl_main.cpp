@@ -139,13 +139,25 @@ void CL_ReadServerMessages( void ) {
 	case MSG_CONNECT_ACCEPTED: {
 		cl.clientnum = MSG_ReadByte( &msg );
 		char *welcome = MSG_ReadString( &msg );
-		Com_Printf( "%s (You are client %d)\n", welcome, cl.clientnum );
+		if ( CL_ChatCallback ) {
+			char sysmsg[256];
+			snprintf( sysmsg, sizeof( sysmsg ), "%s (You are client %d)", welcome, cl.clientnum );
+			CL_ChatCallback( "*", sysmsg );
+		} else {
+			Com_Printf( "%s (You are client %d)\n", welcome, cl.clientnum );
+		}
 		break;
 	}
 
 	case MSG_CONNECT_DENIED: {
 		int reason = MSG_ReadByte( &msg );
-		Com_Printf( "Connection denied (reason: %d)\n", reason );
+		if ( CL_ChatCallback ) {
+			char sysmsg[256];
+			snprintf( sysmsg, sizeof( sysmsg ), "Connection denied (reason: %d)", reason );
+			CL_ChatCallback( "*", sysmsg );
+		} else {
+			Com_Printf( "Connection denied (reason: %d)\n", reason );
+		}
 		cl.connected = lfalse;
 		break;
 	}
@@ -175,19 +187,34 @@ void CL_ReadServerMessages( void ) {
 		char *name = MSG_ReadString( &msg );
 		int status = MSG_ReadByte( &msg );
 
-		Com_Printf( "* %s joined\n", name );
+		if ( CL_ChatCallback ) {
+			char sysmsg[256];
+			snprintf( sysmsg, sizeof( sysmsg ), "%s joined the chat", name );
+			CL_ChatCallback( "*", sysmsg );
+		} else {
+			Com_Printf( "* %s joined\n", name );
+		}
 		break;
 	}
 
 	case MSG_USERLEAVE: {
 		int id = MSG_ReadByte( &msg );
 		char *name = MSG_ReadString( &msg );
-		Com_Printf( "* %s left\n", name );
+		if ( CL_ChatCallback ) {
+			char sysmsg[256];
+			snprintf( sysmsg, sizeof( sysmsg ), "%s left the chat", name );
+			CL_ChatCallback( "*", sysmsg );
+		} else {
+			Com_Printf( "* %s left\n", name );
+		}
 		break;
 	}
 
 	default: {
-		Com_Printf( "Unknown message: %d\n", type );
+		// Only print if not in TUI mode
+		if ( !CL_ChatCallback ) {
+			Com_Printf( "Unknown message: %d\n", type );
+		}
 		break;
 	}
 	}
