@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-17 17:02:56
    Last Modified by: ksiric
-   Last Modified: 2026-03-02 11:19:55
+   Last Modified: 2026-03-10 22:34:47
    ---------------------------------------------------------------------
    Description:
 
@@ -18,13 +18,13 @@
 #include "cmd.h"
 #include <string.h>
 
-static int cmd_argc;
-static char *cmd_argv[MAX_CMD_TOKENS];
-static char cmd_tokenized[MAX_CMD_LENGTH];
-static char cmd_args[MAX_CMD_LENGTH];
-static cmd_t *cmd_list = NULL;
-static char cmd_buffer[MAX_CMD_BUFFER];
-static int cmd_buffer_len = 0;
+global_variable int cmd_argc;
+global_variable char *cmd_argv[MAX_CMD_TOKENS];
+global_variable char cmd_tokenized[MAX_CMD_LENGTH];
+global_variable char cmd_args[MAX_CMD_LENGTH];
+global_variable cmd_t *cmd_list = NULL;
+global_variable char cmd_buffer[MAX_CMD_BUFFER];
+global_variable int cmd_buffer_len = 0;
 
 void Cmd_TokenizeString( const char *text ) {
 	char *out;
@@ -149,7 +149,7 @@ void Cmd_AddCommand( const char *cmdname, cmdfunc_t func ) {
 		Com_Printf( "Cmd_AddCommand: %s already registered!\n", cmdname );
 		return;
 	}
-
+    
 	// Allocate new node for the command
 	cmd = (cmd_t *)malloc( sizeof( cmd_t ) );
 	cmd->name = strdup( cmdname );

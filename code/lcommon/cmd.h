@@ -6,13 +6,9 @@
 #include "l_shared.h"
 #include "lcommon.h"
 
-#define MAX_CMD_TOKENS    64                            // Max command arguments( tokens ) in a single line
-#define MAX_CMD_LENGTH    1024                          // Max single command line length in bytes
-#define MAX_CMD_BUFFER    16384                         // Max command buffer length
-
-#define local_persistent static
-#define global           static
-#define internal         static
+#define MAX_CMD_TOKENS              64                  // Max command arguments( tokens ) in a single line
+#define MAX_CMD_LENGTH              1024                // Max single command line length in bytes
+#define MAX_CMD_BUFFER              16384               // Max command buffer length
 
 typedef void ( *cmdfunc_t )( void );                    // Adding function pointer so taht we can easily call appropriate function that we need
 

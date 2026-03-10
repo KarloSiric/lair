@@ -136,6 +136,16 @@ UTILITY MACROS
 
 /*
 ==============================================================
+STORAGE CLASS HINTS (Casey Muratori style)
+==============================================================
+*/
+
+#define internal        static   // File-scope function or variable (hidden from linker)
+#define local_persist   static   // Local variable that survives between function calls
+#define global_variable static   // File-scope global (multiple functions in file share it)
+
+/*
+==============================================================
 SOCKET TYPE
 ==============================================================
 */
