@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-17 17:02:56
    Last Modified by: ksiric
-   Last Modified: 2026-03-10 22:34:47
+   Last Modified: 2026-03-11 18:26:11
    ---------------------------------------------------------------------
    Description:
 
@@ -14,7 +14,6 @@
    Version: 0.1.0
  ======================================================================
 																	   */
-
 #include "cmd.h"
 #include <string.h>
 
@@ -22,9 +21,22 @@ global_variable int cmd_argc;
 global_variable char *cmd_argv[MAX_CMD_TOKENS];
 global_variable char cmd_tokenized[MAX_CMD_LENGTH];
 global_variable char cmd_args[MAX_CMD_LENGTH];
-global_variable cmd_t *cmd_list = NULL;
+global_variable cmd_t *cmd_buckets[CMD_HASH_SIZE];
 global_variable char cmd_buffer[MAX_CMD_BUFFER];
 global_variable int cmd_buffer_len = 0;
+
+internal u32 Cmd_HashString( const char *str ) {
+    u32 hash = 5381;
+    int c;
+    
+    // @TODO: Implementing using Dan Bernstein magic number, good for distributions
+    while ( ( c = *str++ ) ) {
+        hash = ( ( hash << 5 ) + hash ) + c;
+    }
+    
+    return hash;
+}
+
 
 void Cmd_TokenizeString( const char *text ) {
 	char *out;
@@ -88,9 +100,9 @@ int Cmd_Argc( void ) {
 
 char *Cmd_Argv( int n ) {
 	if ( n < 0 || n > MAX_CMD_TOKENS ) {
-		return (char *)""; // DO not return NULL, instead just return empty string
+		return ( char * )""; // DO not return NULL, instead just return empty string
 	}
-
+    
 	return cmd_argv[n];
 }
 
@@ -122,7 +134,7 @@ char *Cmd_Args( void ) {
 }
 
 void Cmd_Init( void ) {
-	cmd_list = NULL;
+    memset( cmd_buckets, 0, sizeof( cmd_buckets ) );
 	cmd_buffer_len = 0;
 	cmd_buffer[0] = '\0';
 
@@ -131,69 +143,76 @@ void Cmd_Init( void ) {
 
 void Cmd_Shutdown( void ) {
 	cmd_t *cmd, *next;
-
-	cmd = cmd_list;
-
-	while ( cmd ) {
-		next = cmd->next;
-		free( cmd->name );
-		free( cmd ); // points to garbage once we free it
-		cmd = next; // we make it point to the next
-	}
+    
+    for ( int i = 0; i < CMD_HASH_SIZE; ++i ) {
+        cmd = cmd_buckets[i];
+        while ( cmd ) {
+            next = cmd->next;
+            free( cmd->name );
+            free( cmd );
+            cmd = next;
+        } 
+    }
 }
 
 void Cmd_AddCommand( const char *cmdname, cmdfunc_t func ) {
-	cmd_t *cmd;
-
-	if ( Cmd_FindCommand( cmdname ) ) {
-		Com_Printf( "Cmd_AddCommand: %s already registered!\n", cmdname );
-		return;
-	}
+    cmd_t *cmd;
+    u32 hash_index;
     
-	// Allocate new node for the command
-	cmd = (cmd_t *)malloc( sizeof( cmd_t ) );
-	cmd->name = strdup( cmdname );
-	cmd->func = func;
-
-	cmd->next = cmd_list;
-	cmd_list = cmd;
+    if ( Cmd_FindCommand( cmdname ) ) {
+        Com_Printf( "Cmd_AddCommand: %s already registered!\n", cmdname );
+        return ;
+    }
+    
+    // @NOTE(KARLO): Adding hash index finding 
+    hash_index = Cmd_HashString( cmdname ) & CMD_HASH_MASK;
+    
+    cmd = ( cmd_t *)malloc( sizeof( cmd_t ) );
+    cmd->name = strdup( cmdname );
+    cmd->func = func;
+    cmd->next = cmd_buckets[hash_index];
+    cmd_buckets[hash_index] = cmd;
 }
 
 void Cmd_RemoveCommand( const char *cmdname ) {
-	cmd_t *cmd, *prev;
-
-	prev = NULL;
-	cmd = cmd_list;
-
-	while ( cmd ) {
-		if ( strcmp( cmd->name, cmdname ) == 0 ) {
-			// Found the command, remove it from the list
-			if ( prev ) {
-				prev->next = cmd->next;
-			} else {
-				// It's the head of the list
-				cmd_list = cmd->next;
-			}
-
-			free( cmd->name );
-			free( cmd );
-			return;
-		}
-
-		prev = cmd;
-		cmd = cmd->next;
-	}
+    cmd_t *cmd, *prev;
+    
+    u32 hash_index = Cmd_HashString( cmdname ) & CMD_HASH_MASK;
+    
+    prev = NULL;   
+    cmd = cmd_buckets[hash_index];
+    
+    while( cmd ) {
+        if ( strcmp( cmd->name, cmdname ) == 0 ) {
+            if ( prev ) {
+                prev->next = cmd->next;
+            } else {
+                cmd_buckets[hash_index] = cmd->next;
+            }
+            
+            free( cmd->name );
+            free( cmd );
+            return ;
+        }
+        
+        prev = cmd;
+        cmd = cmd->next;
+    }
 }
 
 cmdfunc_t Cmd_FindCommand( const char *name ) {
-	cmd_t *cmd;
-
-	for ( cmd = cmd_list; cmd; cmd = cmd->next ) {
-		if ( strcmp( cmd->name, name ) == 0 ) {
-			return cmd->func;
-		}
-	}
-	return NULL;
+    cmd_t *cmd;
+    u32 hash_index = 0;
+    
+    hash_index = Cmd_HashString( name ) & CMD_HASH_MASK;
+    
+    for ( cmd = cmd_buckets[hash_index]; cmd; cmd = cmd->next ) {
+        if ( strcmp( cmd->name, name ) == 0 ) {
+            return cmd->func;
+        }
+    }
+    
+    return NULL;   
 }
 
 void Cmd_ExecuteString( const char *text ) {

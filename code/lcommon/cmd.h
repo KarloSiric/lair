@@ -10,6 +10,9 @@
 #define MAX_CMD_LENGTH              1024                // Max single command line length in bytes
 #define MAX_CMD_BUFFER              16384               // Max command buffer length
 
+#define CMD_HASH_SIZE               64                  // number of buckets for the hash table
+#define CMD_HASH_MASK               (CMD_HASH_SIZE - 1) // for fast modulo operations so & 63 which is faster and more efficient and produces the same answer
+
 typedef void ( *cmdfunc_t )( void );                    // Adding function pointer so taht we can easily call appropriate function that we need
 
 typedef struct cmd_s {
@@ -33,6 +36,9 @@ cmdfunc_t   Cmd_FindCommand( const char *name );
 
 // Command Execution
 void        Cmd_ExecuteString( const char *text );
+
+// hashing function
+internal u32 Cmd_HashString( const char *str ); 
 
 // Command Buffer
 void        Cbuf_Init( void );
