@@ -8,10 +8,19 @@
 #include "lcommon.h"
 
 typedef struct {
-	lboolean   connected;                  // Slot in use or not ?
-	lsocket    socket;                     // Client's socket
-	int        clientnum;                  // Client's id number used for FD_SET to setting each bit array index to slot being used
-	char       name[MAX_USERNAME];         // Username
+    lboolean            active;
+    int                 id;
+    char                name[MAX_USERNAME];
+    int                 status;  
+} cl_clientinfo_t;
+
+typedef struct {
+	lboolean           connected;                  // Slot in use or not ?
+	lsocket            socket;                     // Client's socket
+	int                clientnum;                  // Client's id number used for FD_SET to setting each bit array index to slot being used
+	char               name[MAX_USERNAME];         // Username
+    cl_clientinfo_t    users[MAX_CLIENTS];         // max users array, list
+    u32                numUsers; 
 } cl_client_t;
 
 typedef void (*chatcallback_t)( const char *sender, const char *text );

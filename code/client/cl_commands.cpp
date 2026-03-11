@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-03-11 18:17:09
    Last Modified by: ksiric
-   Last Modified: 2026-03-11 19:05:46
+   Last Modified: 2026-03-11 19:21:12
    ---------------------------------------------------------------------
    Description:
        
@@ -50,14 +50,31 @@ internal void Cmd_Disconnect_f( void ) {
 }
 
 internal void Cmd_Quit_f( void ) {
-    // @TODO(Karlo): Implementation needed in order to make it work
-    
+    // @TODO(Karlo): Implementation needed in order to make it work  
+    Com_Printf( "Goodbye!\n" );
+    CL_Shutdown();
     
     return ;
 }
 
 internal void Cmd_Help_f( void ) {
     // @TODO(Karlo): Implementation needed in order to make it work
+    Com_Printf( "\n--- Available Commands ---\n" );
+    Com_Printf( "  /connect <host> [port] - Connect to server\n" );
+    Com_Printf( "  /disconnect            - Disconnect\n" );
+    Com_Printf( "  /quit                  - Exit application\n" );
+    Com_Printf( "  /name <username>       - Change name\n" );
+    Com_Printf( "  /help                  - This message\n" );
+    Com_Printf( "--------------------------\n\n" );
+    
+    return ;
+}
+
+internal void Cmd_Users_f( void ) {
+    // @TODO(Karlo): Implementation needed in order to make it work
+    
+    
+    
     
     
     return ;
@@ -69,6 +86,7 @@ void CL_InitCommands( void ) {
     Cmd_AddCommand( "disconnect", Cmd_Disconnect_f );
     Cmd_AddCommand( "quit", Cmd_Quit_f );
     Cmd_AddCommand( "help", Cmd_Help_f );
+    Cmd_AddCommand( "users", Cmd_Users_f );
     
 }
 
