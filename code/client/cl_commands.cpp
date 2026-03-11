@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-03-11 18:17:09
    Last Modified by: ksiric
-   Last Modified: 2026-03-11 19:38:51
+   Last Modified: 2026-03-11 19:52:26
    ---------------------------------------------------------------------
    Description:
        
@@ -72,15 +72,14 @@ internal void Cmd_Help_f( void ) {
 
 internal void Cmd_Users_f( void ) {
     // @TODO(Karlo): Implementation needed in order to make it work
-    
     Com_Printf( "--------- Online Users [%d] ---------\n", cl.numUsers );
     for ( int i = 0; i < MAX_CLIENTS; ++i ) {
         if ( cl.users[i].active ) {
             Com_Printf( "   [%d] %s\n", cl.users[i].id, cl.users[i].name );
         }
     } 
-    Com_Printf( "-------------------------------------\n", cl.numUsers );
     
+    Com_Printf( "-------------------------------------\n" );
     return ;
 }
 
