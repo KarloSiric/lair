@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-03-11 18:17:09
    Last Modified by: ksiric
-   Last Modified: 2026-03-11 18:26:51
+   Last Modified: 2026-03-11 18:34:52
    ---------------------------------------------------------------------
    Description:
        
@@ -21,10 +21,18 @@
 
 internal void Cmd_Connect_f( void ) {
     // @TODO(Karlo): Implementation needed in order to make it work
+    const char *host;
+    u16 port;
     
+    if ( Cmd_Argc() < 2 ) {
+        Com_Printf( "Usage: /connect <host> [port]\n" );
+        return ;
+    }
     
+    host = Cmd_Argv( 1 );
+    port = Cmd_Argv( Cmd_Argc() > 2 ) ? atoi( Cmd_Argv( 2 ) ) : DEFAULT_PORT; 
     
-    
+    CL_Connect( host, port );
     
     return ;
 }
