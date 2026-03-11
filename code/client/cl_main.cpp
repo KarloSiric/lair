@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-17 01:17:55
    Last Modified by: ksiric
-   Last Modified: 2026-03-11 19:07:39
+   Last Modified: 2026-03-11 19:35:49
    ---------------------------------------------------------------------
    Description:
 
@@ -28,6 +28,7 @@ void CL_Init( void ) {
 	memset( &cl, 0, sizeof( cl ) );
 	cl.socket = INVALID_SOCKET_HANDLE;
 	cl.connected = lfalse;
+    cl.numUsers = 0;
 }
 
 void CL_Connect( const char *host, u16 port ) {
@@ -186,7 +187,14 @@ void CL_ReadServerMessages( void ) {
 		int id = MSG_ReadByte( &msg );
 		char *name = MSG_ReadString( &msg );
 		int status = MSG_ReadByte( &msg );
-
+        
+        cl.users[id].active = ltrue;
+        cl.users[id].id = id;
+        strncpy( cl.users[id].name, name, MAX_USERNAME - 1 );
+        cl.users[id].name[MAX_USERNAME - 1] = '\0';
+        cl.users[id].status = status;
+        cl.numUsers++; 
+        
 		if ( CL_ChatCallback ) {
 			char sysmsg[256];
 			snprintf( sysmsg, sizeof( sysmsg ), "%s joined the chat", name );
@@ -200,6 +208,12 @@ void CL_ReadServerMessages( void ) {
 	case MSG_USERLEAVE: {
 		int id = MSG_ReadByte( &msg );
 		char *name = MSG_ReadString( &msg );
+        
+        if ( cl.users[id].active ) {
+            cl.users[id].active = lfalse;
+            cl.numUsers--;
+        }
+        
 		if ( CL_ChatCallback ) {
 			char sysmsg[256];
 			snprintf( sysmsg, sizeof( sysmsg ), "%s left the chat", name );

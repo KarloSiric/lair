@@ -3,7 +3,6 @@
 #ifndef __LAIR_CLIENT_H__
 #define __LAIR_CLIENT_H__
 
-#include "l_shared.h"
 #include "msg.h"
 #include "lcommon.h"
 
@@ -20,7 +19,7 @@ typedef struct {
 	int                clientnum;                  // Client's id number used for FD_SET to setting each bit array index to slot being used
 	char               name[MAX_USERNAME];         // Username
     cl_clientinfo_t    users[MAX_CLIENTS];         // max users array, list
-    u32                numUsers; 
+    int                numUsers; 
 } cl_client_t;
 
 typedef void (*chatcallback_t)( const char *sender, const char *text );

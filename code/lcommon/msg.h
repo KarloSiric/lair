@@ -8,9 +8,7 @@
 #include "l_shared.h"
 
 
-
 #define MAX_MSG_LEN       16384
-
 
 
 typedef struct {
