@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-16 15:06:21
    Last Modified by: ksiric
-   Last Modified: 2026-03-02 22:33:50
+   Last Modified: 2026-03-11 18:53:02
    ---------------------------------------------------------------------
    Description:
 
@@ -18,7 +18,6 @@
 /* Messages main.cpp - msg implementations from msg.h header */
 
 #include "msg.h"
-
 #include <string.h>
 
 void MSG_Init( msg_t *msg, byte *data, int maxsize ) {
@@ -84,7 +83,7 @@ void MSG_WriteString( msg_t *msg, const char *data ) {
     
 	size_t datalen = strlen( data ) + 1;
     
-	if ( msg->cursize + (int)datalen > msg->maxsize ) {
+	if ( msg->cursize + ( int )datalen > msg->maxsize ) {
 		msg->overflowed = ltrue;
 		return;
 	}

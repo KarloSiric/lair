@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-03-11 18:17:09
    Last Modified by: ksiric
-   Last Modified: 2026-03-11 18:34:52
+   Last Modified: 2026-03-11 19:05:46
    ---------------------------------------------------------------------
    Description:
        
@@ -39,7 +39,12 @@ internal void Cmd_Connect_f( void ) {
 
 internal void Cmd_Disconnect_f( void ) {
     // @TODO(Karlo): Implementation needed in order to make it work
+    if ( !cl.connected ) {
+        Com_Printf( "User not connected!\n" );
+        return ;
+    }
     
+    CL_Disconnect();
     
     return ;
 }
