@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-25 09:59:38
    Last Modified by: ksiric
-   Last Modified: 2026-03-02 22:29:33
+   Last Modified: 2026-03-12 20:28:52
    ---------------------------------------------------------------------
    Description:
 
@@ -16,6 +16,7 @@
 																	   */
 #include "tui.h"
 #include "client.h"
+#include "cmd.h"
 #include <string.h>
 #include <time.h>
 
@@ -326,7 +327,13 @@ lboolean TUI_HandleInput( void ) {
 		return ltrue;
 	} else if ( ch == '\n' || ch == KEY_ENTER ) {
 		if ( chat_input_len > 0 ) {
-			CL_SendChat( chat_input );
+            // @NOTE: Checking if its a command or a regular message
+            if ( chat_input[0] == '/' ) {
+                Cmd_ExecuteString( chat_input );
+            } else {
+    			CL_SendChat( chat_input );
+            }
+            
 			chat_input[0] = '\0';
 			chat_input_len = 0;
 		}
@@ -336,7 +343,6 @@ lboolean TUI_HandleInput( void ) {
 			chat_input[chat_input_len] = '\0';
 		}
 	}
-
 	else if ( ch >= 32 && ch <= 126 ) {
 		if ( chat_input_len < 255 ) {
 			chat_input[chat_input_len] = ch;
@@ -662,7 +668,7 @@ void TUI_AddChatMessage( const char *sender, const char *text ) {
 
 	strncpy( msg->sender, sender, MAX_USERNAME - 1 );
 	msg->sender[MAX_USERNAME - 1] = '\0';
-
+    
 	strncpy( msg->text, text, MAX_STRING_CHARS - 1 );
 	msg->text[MAX_STRING_CHARS - 1] = '\0';
 

@@ -41,6 +41,7 @@ target_include_directories(lair_platform PUBLIC code/lcommon)
 add_library(lair_common STATIC
     code/lcommon/common.cpp
     code/lcommon/msg.cpp
+    code/lcommon/cmd.cpp
 )
 
 target_include_directories(lair_common PUBLIC code/lcommon)
@@ -69,6 +70,7 @@ if(LAIR_BUILD_CLIENT_TUI)
         code/client-tui/main.cpp
         code/client-tui/tui.cpp
         code/client/cl_main.cpp
+        code/client/cl_commands.cpp
     )
     target_include_directories(lair_client PRIVATE 
         code/client-tui

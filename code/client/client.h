@@ -29,6 +29,7 @@ extern chatcallback_t CL_ChatCallback;
 extern cl_client_t cl;
 
 void CL_Init( void );
+void CL_InitCommands( void );
 void CL_Shutdown( void );
 void CL_Frame( void );
 void CL_Connect( const char *host, u16 port );
@@ -38,5 +39,6 @@ void CL_SendChat( const char *text );
 void CL_SendDisconnect( void );
 void CL_ReadServerMessages( void );
 void CL_Shutdown( void );
+
 
 #endif /* __LAIR_CLIENT_H__ - END */
