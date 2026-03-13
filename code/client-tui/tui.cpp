@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-25 09:59:38
    Last Modified by: ksiric
-   Last Modified: 2026-03-12 20:28:52
+   Last Modified: 2026-03-13 10:06:49
    ---------------------------------------------------------------------
    Description:
 
@@ -254,26 +254,35 @@ void TUI_DrawChatWindow( void ) {
 			lines_to_skip -= msg_lines;
 			continue;
 		}
-
-		// Check if system message (sender = "*")
-		int is_system = ( msg->sender[0] == '*' && msg->sender[1] == '\0' );
-
-		// Draw timestamp
-		wattron( chat_win, COLOR_PAIR( COL_CHAT_TIMESTAMP ) );
-		mvwprintw( chat_win, line, 2, "%s ", msg->timestamp );
-		wattroff( chat_win, COLOR_PAIR( COL_CHAT_TIMESTAMP ) );
-
-		// Draw username (green for system, cyan for users)
-		if ( is_system ) {
-			wattron( chat_win, COLOR_PAIR( COL_CHAT_SYSTEM ) | A_BOLD );
-			wprintw( chat_win, "%s ", msg->sender );
-			wattroff( chat_win, COLOR_PAIR( COL_CHAT_SYSTEM ) | A_BOLD );
-		} else {
-			wattron( chat_win, COLOR_PAIR( COL_CHAT_SELF ) | A_BOLD );
-			wprintw( chat_win, "%s: ", msg->sender );
-			wattroff( chat_win, COLOR_PAIR( COL_CHAT_SELF ) | A_BOLD );
+        
+        // @NOTE(Karlo): Adding type checking for the new way of working on these things
+        switch( msg->type ) {
+		  case DISPLAY_CHAT: {
+            wattron( chat_win, COLOR_PAIR( COL_CHAT_SELF ) | A_BOLD );
+            wprintw( chat_win, "%s ", msg->sender );
+            wattroff( chat_win, COLOR_PAIR( COL_CHAT_SELF ) | A_BOLD );         
+            break;
+		  }
+		  case DISPLAY_ERROR: {
+            wattron( chat_win, COLOR_PAIR( COL_ERROR ) | A_BOLD );
+            wprintw( chat_win, "%s ", msg->sender );
+            wattroff( chat_win, COLOR_PAIR( COL_ERROR ) | A_BOLD );         
+            break;
+		  }
+		  case DISPLAY_SYSTEM: {
+            wattron( chat_win, COLOR_PAIR( COL_CHAT_SYSTEM ) | A_BOLD );
+            wprintw( chat_win, "%s ", msg->sender );
+            wattroff( chat_win, COLOR_PAIR( COL_CHAT_SYSTEM ) | A_BOLD );         
+			break;
+	      }
+		  default: {
+            wattron( chat_win, COLOR_PAIR( COL_ERROR ) | A_BOLD );
+            wprintw( chat_win, "%s ", msg->sender );
+            wattroff( chat_win, COLOR_PAIR( COL_ERROR ) | A_BOLD );         
+			break;
+          }
 		}
-
+        
 		// Draw message with word wrapping
 		const char *text = msg->text;
 		int remaining = text_len;
@@ -613,6 +622,11 @@ lboolean TUI_HandleNameValidation( void ) {
 	return valid_name;
 }
 
+/**
+ * @brief      { Frame function, function that is beeing looped in the main program execution }
+ *
+ * @return     { description_of_the_return_value }
+ */
 lboolean TUI_Frame( void ) {
 	// Check for terminal resize
 	int new_rows, new_cols;
@@ -652,7 +666,15 @@ lboolean TUI_Frame( void ) {
 	return tui_running;
 }
 
-void TUI_AddChatMessage( const char *sender, const char *text ) {
+/**
+ * @brief      { Main Helper function for displaying messages to the screen }
+ *
+ * @param[in]  type    The type
+ * @param[in]  sender  The sender
+ * @param[in]  text    The text
+ */
+
+internal void TUI_AddMessage( displaytype_t type, const char *sender, const char *text ) {
 	time_t now;
 	struct tm *t;
 	chatmsg_t *msg;
@@ -665,6 +687,27 @@ void TUI_AddChatMessage( const char *sender, const char *text ) {
 		chat_message_count = MAX_CHAT_MESSAGES - 1;
 	}
 	msg = &chat_messages[chat_message_count];
+    
+    msg->type = type;
+    
+    switch ( type ) {
+        case DISPLAY_CHAT: {
+            strncpy( msg->sender, sender, MAX_USERNAME - 1 );
+            break;
+        }
+        case DISPLAY_ERROR: {
+            strncpy( msg->sender, "[ERROR]", MAX_USERNAME - 1 );
+            break;
+        }
+        case DISPLAY_SYSTEM: {
+            strncpy( msg->sender, "[SYSTEM]", MAX_USERNAME - 1 );
+            break;
+        }
+        default: {
+            strncpy( msg->sender, "", MAX_USERNAME - 1 );
+            break;
+        }
+    }
 
 	strncpy( msg->sender, sender, MAX_USERNAME - 1 );
 	msg->sender[MAX_USERNAME - 1] = '\0';
@@ -677,6 +720,18 @@ void TUI_AddChatMessage( const char *sender, const char *text ) {
 	snprintf( msg->timestamp, sizeof( msg->timestamp ), "[%02d:%02d:%02d]", t->tm_hour, t->tm_min, t->tm_sec );
 
 	chat_message_count++;
+}
+
+void TUI_AddErrorMessage( const char *sender, const char *text ) {
+    TUI_AddMessage( DISPLAY_ERROR , sender, text );
+}
+
+void TUI_AddChatMessage( const char *sender, const char *text ) {
+    TUI_AddMessage( DISPLAY_CHAT, sender, text);
+}
+
+void TUI_AddSystemMessage( const char *sender, const char *text ) {
+    TUI_AddMessage( DISPLAY_SYSTEM, sender, text);
 }
 
 void TUI_InitColors( void ) {

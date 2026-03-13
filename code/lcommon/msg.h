@@ -21,8 +21,6 @@ typedef struct {
     
 } msg_t;
 
-
-
 typedef enum {
     
     MSG_BAD = 0,                       // Invalid message

@@ -14,17 +14,17 @@ typedef struct {
 } cl_clientinfo_t;
 
 typedef struct {
-	lboolean           connected;                  // Slot in use or not ?
-	lsocket            socket;                     // Client's socket
-	int                clientnum;                  // Client's id number used for FD_SET to setting each bit array index to slot being used
-	char               name[MAX_USERNAME];         // Username
-    cl_clientinfo_t    users[MAX_CLIENTS];         // max users array, list
-    int                numUsers; 
+	lboolean            connected;                  // Slot in use or not ?
+	lsocket             socket;                     // Client's socket
+	int                 clientnum;                  // Client's id number used for FD_SET to setting each bit array index to slot being used
+	char                name[MAX_USERNAME];         // Username
+    cl_clientinfo_t     users[MAX_CLIENTS];         // max users array, list
+    int                 numUsers; 
 } cl_client_t;
 
-typedef void (*chatcallback_t)( const char *sender, const char *text );
+typedef void ( *chatcallback_t )( const char *sender, const char *text );
 
-extern chatcallback_t CL_ChatCallback;
+extern chatcallback_t      CL_ChatCallback;
 
 extern cl_client_t cl;
 

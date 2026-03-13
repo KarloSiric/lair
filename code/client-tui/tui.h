@@ -83,7 +83,14 @@ typedef enum {
     STATE_CHAT
 } tuistate_t;
 
+typedef enum {
+    DISPLAY_CHAT,
+    DISPLAY_SYSTEM,
+    DISPLAY_ERROR
+} displaytype_t;
+
 typedef struct {
+    displaytype_t type;
     char sender[MAX_USERNAME];
     char text[MAX_STRING_CHARS];
     char timestamp[16];

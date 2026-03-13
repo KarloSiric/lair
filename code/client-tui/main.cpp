@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-25 11:29:14
    Last Modified by: ksiric
-   Last Modified: 2026-03-11 21:47:34
+   Last Modified: 2026-03-12 21:42:36
    ---------------------------------------------------------------------
    Description:
        
@@ -15,6 +15,7 @@
  ======================================================================
                                                                        */
 
+#include "cmd.h"
 #include "tui.h"
 #include "client.h"
 
@@ -27,7 +28,10 @@ int main( int argc, char *argv[] ) {
     CL_InitCommands();
     TUI_Init();
     
+    // @NOTE(Karlo): Registering the function pointer calls to each and every single function that we will need 
     CL_ChatCallback = TUI_AddChatMessage;
+    Cmd_ErrorCallback = TUI_AddChatMessage;
+    
     
     while( TUI_Frame() ) {
         //  everything happens in this

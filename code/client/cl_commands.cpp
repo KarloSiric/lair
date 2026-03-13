@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-03-11 18:17:09
    Last Modified by: ksiric
-   Last Modified: 2026-03-12 20:56:11
+   Last Modified: 2026-03-12 20:57:24
    ---------------------------------------------------------------------
    Description:
        
@@ -32,7 +32,7 @@ internal void Cmd_Connect_f( void ) {
     }
     
     host = Cmd_Argv( 1 );
-    port = Cmd_Argc() > 2 ? atoi( Cmd_Argv( 2 ) ) : DEFAULT_PORT; 
+    port = ( Cmd_Argc() > 2 ) ? atoi( Cmd_Argv( 2 ) ) : DEFAULT_PORT; 
     
     CL_Connect( host, port );
     
