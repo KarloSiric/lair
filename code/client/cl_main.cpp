@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-17 01:17:55
    Last Modified by: ksiric
-   Last Modified: 2026-03-11 19:35:49
+   Last Modified: 2026-03-13 11:28:22
    ---------------------------------------------------------------------
    Description:
 
@@ -22,7 +22,10 @@
 #include <sys/select.h>
 
 cl_client_t cl;
-chatcallback_t CL_ChatCallback = NULL;
+
+chatcallback_t CL_ChatCallback   = NULL;
+msgcallback_t  CL_ErrorCallback  = NULL;
+msgcallback_t  CL_SystemCallback = NULL;
 
 void CL_Init( void ) {
 	memset( &cl, 0, sizeof( cl ) );
@@ -140,10 +143,10 @@ void CL_ReadServerMessages( void ) {
 	case MSG_CONNECT_ACCEPTED: {
 		cl.clientnum = MSG_ReadByte( &msg );
 		char *welcome = MSG_ReadString( &msg );
-		if ( CL_ChatCallback ) {
+		if ( CL_SystemCallback ) {
 			char sysmsg[256];
 			snprintf( sysmsg, sizeof( sysmsg ), "%s (You are client %d)", welcome, cl.clientnum );
-			CL_ChatCallback( "*", sysmsg );
+            CL_SystemCallback( sysmsg );
 		} else {
 			Com_Printf( "%s (You are client %d)\n", welcome, cl.clientnum );
 		}
@@ -152,10 +155,10 @@ void CL_ReadServerMessages( void ) {
 
 	case MSG_CONNECT_DENIED: {
 		int reason = MSG_ReadByte( &msg );
-		if ( CL_ChatCallback ) {
+		if ( CL_SystemCallback ) {
 			char sysmsg[256];
 			snprintf( sysmsg, sizeof( sysmsg ), "Connection denied (reason: %d)", reason );
-			CL_ChatCallback( "*", sysmsg );
+            CL_SystemCallback( sysmsg );
 		} else {
 			Com_Printf( "Connection denied (reason: %d)\n", reason );
 		}
@@ -195,10 +198,10 @@ void CL_ReadServerMessages( void ) {
         cl.users[id].status = status;
         cl.numUsers++; 
         
-		if ( CL_ChatCallback ) {
+		if ( CL_SystemCallback ) {
 			char sysmsg[256];
 			snprintf( sysmsg, sizeof( sysmsg ), "%s joined the chat", name );
-			CL_ChatCallback( "*", sysmsg );
+            CL_SystemCallback( sysmsg );
 		} else {
 			Com_Printf( "* %s joined\n", name );
 		}
@@ -214,16 +217,16 @@ void CL_ReadServerMessages( void ) {
             cl.numUsers--;
         }
         
-		if ( CL_ChatCallback ) {
+		if ( CL_SystemCallback ) {
 			char sysmsg[256];
 			snprintf( sysmsg, sizeof( sysmsg ), "%s left the chat", name );
-			CL_ChatCallback( "*", sysmsg );
+            CL_SystemCallback( sysmsg );
 		} else {
 			Com_Printf( "* %s left\n", name );
 		}
 		break;
 	}
-
+    
 	default: {
 		// Only print if not in TUI mode
 		if ( !CL_ChatCallback ) {

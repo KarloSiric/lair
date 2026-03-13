@@ -118,6 +118,12 @@ lboolean TUI_HandleNameValidation();
 lboolean TUI_Frame();
 lboolean TUI_HandleInput();
 
+void TUI_AddMessage( const char *sender, const char *text );
+
+void TUI_AddErrorMessage( const char *text );
+
+void TUI_AddSystemMessage( const char *text );
+
 void TUI_AddChatMessage( const char *sender, const char *text );
 
 #endif          /* __TUI_H__ END */

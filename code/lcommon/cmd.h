@@ -14,7 +14,7 @@
 #define CMD_HASH_MASK               (CMD_HASH_SIZE - 1)  // for fast modulo operations so & 63 which is faster and more efficient and produces the same answer
 
 typedef void ( *cmd_func_t )( void );                    // Adding function pointer so taht we can easily call appropriate function that we need
-typedef void ( *cmd_errorcallback_t )( const char *, const char * );   // Adding a function pointer so that we can call errors appropriately for all the errors we will need
+typedef void ( *cmd_errorcallback_t )( const char * );   // Adding a function pointer so that we can call errors appropriately for all the errors we will need
 
 extern cmd_errorcallback_t Cmd_ErrorCallback;
 

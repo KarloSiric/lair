@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-25 09:59:38
    Last Modified by: ksiric
-   Last Modified: 2026-03-13 10:06:49
+   Last Modified: 2026-03-13 11:38:09
    ---------------------------------------------------------------------
    Description:
 
@@ -255,6 +255,10 @@ void TUI_DrawChatWindow( void ) {
 			continue;
 		}
         
+        wattron( chat_win, COLOR_PAIR( COL_CHAT_TIMESTAMP ) );
+        mvwprintw( chat_win, line, 2, "%s ", msg->timestamp );
+        wattroff( chat_win, COLOR_PAIR( COL_CHAT_TIMESTAMP ) ); 
+        
         // @NOTE(Karlo): Adding type checking for the new way of working on these things
         switch( msg->type ) {
 		  case DISPLAY_CHAT: {
@@ -288,11 +292,25 @@ void TUI_DrawChatWindow( void ) {
 		int remaining = text_len;
 		int line_width = first_line_width;
 		int first = 1;
-
-		// System messages in green
-		if ( is_system ) {
-			wattron( chat_win, COLOR_PAIR( COL_CHAT_SYSTEM ) );
-		}
+        
+        switch ( msg->type ) {
+            case DISPLAY_ERROR: {
+                wattron( chat_win, COLOR_PAIR( COL_ERROR ) );
+                break;
+            }
+            case DISPLAY_SYSTEM: {
+                wattron( chat_win, COLOR_PAIR( COL_CHAT_SYSTEM ) );
+                break;
+            }
+            case DISPLAY_CHAT: {
+                if ( strcmp( msg->sender, cl.name ) == 0 ) {
+                    wattron( chat_win, COLOR_PAIR( COL_CHAT_SELF ) );
+                } else {
+                    wattron( chat_win, COLOR_PAIR( COL_CHAT_OTHER ) );
+                }
+                break;
+            }
+        }
 
 		while ( remaining > 0 && line < win_h - 1 ) {
 			int chunk = ( remaining > line_width ) ? line_width : remaining;
@@ -315,10 +333,26 @@ void TUI_DrawChatWindow( void ) {
 			remaining -= chunk;
 			if ( remaining > 0 ) line++;
 		}
+        
+        switch ( msg->type ) {
+            case DISPLAY_ERROR: {
+                wattroff( chat_win, COLOR_PAIR( COL_ERROR ) );
+                break;
+            }
+            case DISPLAY_SYSTEM: {
+                wattroff( chat_win, COLOR_PAIR( COL_CHAT_SYSTEM ) );
+                break;
+            }
+            case DISPLAY_CHAT: {
+                if ( strcmp( msg->sender, cl.name ) == 0 ) {
+                    wattroff( chat_win, COLOR_PAIR( COL_CHAT_SELF ) );
+                } else {
+                    wattroff( chat_win, COLOR_PAIR( COL_CHAT_OTHER ) );
+                }
+                break;
+            }
+        }
 
-		if ( is_system ) {
-			wattroff( chat_win, COLOR_PAIR( COL_CHAT_SYSTEM ) );
-		}
 		line++;
 	}
 
@@ -674,7 +708,7 @@ lboolean TUI_Frame( void ) {
  * @param[in]  text    The text
  */
 
-internal void TUI_AddMessage( displaytype_t type, const char *sender, const char *text ) {
+void TUI_AddMessage( displaytype_t type, const char *sender, const char *text ) {
 	time_t now;
 	struct tm *t;
 	chatmsg_t *msg;
@@ -722,16 +756,16 @@ internal void TUI_AddMessage( displaytype_t type, const char *sender, const char
 	chat_message_count++;
 }
 
-void TUI_AddErrorMessage( const char *sender, const char *text ) {
-    TUI_AddMessage( DISPLAY_ERROR , sender, text );
+void TUI_AddErrorMessage(const char *text ) {
+    TUI_AddMessage( DISPLAY_ERROR , "[ERROR]", text );
+}
+
+void TUI_AddSystemMessage( const char *sender, const char *text ) {
+    TUI_AddMessage( DISPLAY_SYSTEM, "[SYSTEM]", text);
 }
 
 void TUI_AddChatMessage( const char *sender, const char *text ) {
     TUI_AddMessage( DISPLAY_CHAT, sender, text);
-}
-
-void TUI_AddSystemMessage( const char *sender, const char *text ) {
-    TUI_AddMessage( DISPLAY_SYSTEM, sender, text);
 }
 
 void TUI_InitColors( void ) {

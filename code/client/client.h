@@ -22,9 +22,16 @@ typedef struct {
     int                 numUsers; 
 } cl_client_t;
 
-typedef void ( *chatcallback_t )( const char *sender, const char *text );
+
+typedef void ( *chatcallback_t )( const char *sender, const char *text );           // Function pointer for sending chat messages to the TUI display form
+
+typedef void ( *msgcallback_t )( const char *text );
+
 
 extern chatcallback_t      CL_ChatCallback;
+
+extern msgcallback_t       CL_SystemCallback;
+extern msgcallback_t       CL_ErrorCallback;
 
 extern cl_client_t cl;
 

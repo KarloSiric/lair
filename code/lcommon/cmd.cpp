@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-17 17:02:56
    Last Modified by: ksiric
-   Last Modified: 2026-03-12 21:42:11
+   Last Modified: 2026-03-13 11:41:07
    ---------------------------------------------------------------------
    Description:
 
@@ -15,6 +15,7 @@
  ======================================================================
 																	   */
 #include "cmd.h"
+#include <stdio.h>
 #include <string.h>
 
 global_variable int cmd_argc;
@@ -218,7 +219,6 @@ cmd_func_t Cmd_FindCommand( const char *name ) {
 
 void Cmd_ExecuteString( const char *text ) {
 	cmd_func_t func;
-
 	Cmd_TokenizeString( text );
 
 	// No tokens means nothing to execute
@@ -232,6 +232,12 @@ void Cmd_ExecuteString( const char *text ) {
 		func();
 		return;
 	}
+    
+    if ( Cmd_ErrorCallback ) {
+        char buf[128];
+        snprintf( buf, sizeof( buf ), "Unknown command: %s", cmd_argv[0] );
+        Cmd_ErrorCallback( buf );
+    }
     
 }
 

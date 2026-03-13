@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-03-11 18:17:09
    Last Modified by: ksiric
-   Last Modified: 2026-03-12 20:57:24
+   Last Modified: 2026-03-13 11:35:07
    ---------------------------------------------------------------------
    Description:
        
@@ -25,8 +25,8 @@ internal void Cmd_Connect_f( void ) {
     u16 port;
     
     if ( Cmd_Argc() < 2 ) {
-        if ( CL_ChatCallback ) {
-            CL_ChatCallback( "*", "Usage: /connect <host> [port]\n" );
+        if ( CL_ErrorCallback ) {
+            CL_ErrorCallback( "Usage: /connect <host> [port]\n" );
         }
         return ;
     }
@@ -42,15 +42,15 @@ internal void Cmd_Connect_f( void ) {
 internal void Cmd_Name_f( void ) {
     // @NOTE(Karlo): Adding name command so that users can connect
     if ( Cmd_Argc() < 2 ) {
-        if ( CL_ChatCallback ) {
-            CL_ChatCallback( "*", "Usage: /name <username>" );
+        if ( CL_ErrorCallback ) {
+            CL_ErrorCallback( "Usage: /name <username>" );
         }
         return ;
     }
     
     if ( !cl.connected ) {
-        if ( CL_ChatCallback ) {
-            CL_ChatCallback( "*", "User not connected!" );
+        if ( CL_ErrorCallback ) {
+            CL_ErrorCallback( "User not connected!" );
         }
         return ;
     }
@@ -61,8 +61,8 @@ internal void Cmd_Name_f( void ) {
 internal void Cmd_Disconnect_f( void ) {
     // @TODO(Karlo): Implementation needed in order to make it work
     if ( !cl.connected ) {
-        if ( CL_ChatCallback ) {
-            CL_ChatCallback( "*", "User not connected!\n" );
+        if ( CL_ErrorCallback ) {
+            CL_ErrorCallback( "User not connected!\n" );
         }
         return ;
     }
@@ -74,8 +74,8 @@ internal void Cmd_Disconnect_f( void ) {
 
 internal void Cmd_Quit_f( void ) {
     // @TODO(Karlo): Implementation needed in order to make it work  
-    if ( CL_ChatCallback ) {
-        CL_ChatCallback( "*", "Goodbye!\n" );
+    if ( CL_SystemCallback ) {
+        CL_SystemCallback( "Goodbye!\n" );
     }
     
     CL_Shutdown();
@@ -87,14 +87,14 @@ internal void Cmd_Help_f( void ) {
     // @TODO(Karlo): Implementation needed in order to make it work
     
     
-    if ( CL_ChatCallback ) {
-        CL_ChatCallback( "*", "\n--- Available Commands ---\n" );
-        CL_ChatCallback( "*", "  /connect <host> [port] - Connect to server\n" );
-        CL_ChatCallback( "*", "  /disconnect            - Disconnect\n" );
-        CL_ChatCallback( "*", "  /quit                  - Exit application\n" );
-        CL_ChatCallback( "*", "  /name <username>       - Change name\n" );
-        CL_ChatCallback( "*", "  /help                  - This message\n" );
-        CL_ChatCallback( "*", "--------------------------\n\n" );
+    if ( CL_SystemCallback ) {
+        CL_SystemCallback( "\n--- Available Commands ---\n" );
+        CL_SystemCallback( "  /connect <host> [port] - Connect to server\n" );
+        CL_SystemCallback( "  /disconnect            - Disconnect\n" );
+        CL_SystemCallback( "  /quit                  - Exit application\n" );
+        CL_SystemCallback( "  /name <username>       - Change name\n" );
+        CL_SystemCallback( "  /help                  - This message\n" );
+        CL_SystemCallback( "--------------------------\n\n" );
     } else {
         Com_Printf( "\n--- Available Commands ---\n" );
         Com_Printf( "  /connect <host> [port] - Connect to server\n" );
@@ -110,17 +110,17 @@ internal void Cmd_Help_f( void ) {
 
 internal void Cmd_Users_f( void ) {
     // @TODO(Karlo): Implementation needed in order to make it work
-    if ( CL_ChatCallback ) {
+    if ( CL_SystemCallback ) {
         char buf[512];
         snprintf( buf, sizeof( buf ), "--------- Online Users [%d] ---------\n", cl.numUsers );
-        CL_ChatCallback( "*", buf );
+        CL_SystemCallback( buf );
         for ( int i = 0; i < MAX_CLIENTS; ++i ) {
             if ( cl.users[i].active ) {
                 snprintf( buf, sizeof( buf ), "   [%d] %s\n", cl.users[i].id, cl.users[i].name );
-                CL_ChatCallback( "*", buf );
+                CL_SystemCallback( buf );
             }
         } 
-        CL_ChatCallback( "*", "-------------------------------------\n" );
+        CL_SystemCallback( "-------------------------------------\n" );
     }
     
     return ;
