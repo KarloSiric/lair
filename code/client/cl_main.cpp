@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-17 01:17:55
    Last Modified by: ksiric
-   Last Modified: 2026-03-13 11:28:22
+   Last Modified: 2026-03-13 11:55:29
    ---------------------------------------------------------------------
    Description:
 
@@ -39,14 +39,26 @@ void CL_Connect( const char *host, u16 port ) {
 	int c;
 
 	if ( cl.socket == INVALID_SOCKET_HANDLE ) {
-		Com_Printf( "CL_Connect: Failed to create socket\n" );
+        if ( CL_ErrorCallback ) {
+            CL_ErrorCallback( "CL_Connect: Failed to create socket\n" );
+        } else {
+    		Com_Printf( "CL_Connect: Failed to create socket\n" );
+        }
 		return;
 	}
 
 	c = Net_Connect( cl.socket, host, port );
 
 	if ( c == -1 ) {
-		Com_Printf( "CL_Connect: Failed to connect to %s:%d\n", host, port );
+        if ( CL_ErrorCallback ) {
+            char buf[256];
+            snprintf( buf, sizeof( buf ), "CL_Connect: Failed to connect to %s:%d\n", host, port ); 
+            CL_ErrorCallback( buf );
+            
+        } else {
+    		Com_Printf( "CL_Connect: Failed to connect to %s:%d\n", host, port );
+        }
+        
 		Net_Close( cl.socket );
 		cl.socket = INVALID_SOCKET_HANDLE;
 		return;

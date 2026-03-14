@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-25 09:59:38
    Last Modified by: ksiric
-   Last Modified: 2026-03-13 11:38:09
+   Last Modified: 2026-03-13 11:44:54
    ---------------------------------------------------------------------
    Description:
 
@@ -760,7 +760,7 @@ void TUI_AddErrorMessage(const char *text ) {
     TUI_AddMessage( DISPLAY_ERROR , "[ERROR]", text );
 }
 
-void TUI_AddSystemMessage( const char *sender, const char *text ) {
+void TUI_AddSystemMessage( const char *text ) {
     TUI_AddMessage( DISPLAY_SYSTEM, "[SYSTEM]", text);
 }
 

@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-25 11:29:14
    Last Modified by: ksiric
-   Last Modified: 2026-03-13 11:21:12
+   Last Modified: 2026-03-13 11:42:57
    ---------------------------------------------------------------------
    Description:
        
@@ -31,6 +31,7 @@ int main( int argc, char *argv[] ) {
     // @NOTE(Karlo): Registering the function pointer calls to each and every single function that we will need 
     CL_ChatCallback   = TUI_AddChatMessage;
     CL_ErrorCallback  = TUI_AddErrorMessage;
+    CL_SystemCallback = TUI_AddSystemMessage;
     Cmd_ErrorCallback = TUI_AddErrorMessage;
     
     while( TUI_Frame() ) {
