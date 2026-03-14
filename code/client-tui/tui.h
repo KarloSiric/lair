@@ -10,8 +10,8 @@ WINDOW DIMENSIONS
 ==============================================================
 */
 
-#define CONNECT_WIN_HEIGHT      14
-#define CONNECT_WIN_WIDTH       44
+#define CONNECT_WIN_HEIGHT      15
+#define CONNECT_WIN_WIDTH       52
 #define NAME_WIN_HEIGHT         10
 #define NAME_WIN_WIDTH          40
 #define QUIT_WIN_HEIGHT         7
@@ -98,6 +98,7 @@ typedef struct {
 
 void TUI_Init( void );
 void TUI_Shutdown( void );
+void TUI_Quit( void );
 void TUI_HandleResize( void );
 void TUI_InitColors( void );
 void TUI_DrawDoubleBox( WINDOW *win, int starty, int startx, int height, int width );
@@ -118,7 +119,7 @@ lboolean TUI_HandleNameValidation();
 lboolean TUI_Frame();
 lboolean TUI_HandleInput();
 
-void TUI_AddMessage( const char *sender, const char *text );
+void TUI_AddMessage( displaytype_t type, const char *sender, const char *text );
 
 void TUI_AddErrorMessage( const char *text );
 

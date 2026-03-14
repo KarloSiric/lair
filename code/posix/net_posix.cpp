@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-15 17:29:12
    Last Modified by: ksiric
-   Last Modified: 2026-03-03 11:17:06
+   Last Modified: 2026-03-14 12:20:59
    ---------------------------------------------------------------------
    Description:
 
@@ -22,11 +22,15 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/socket.h>
+#include <sys/select.h>
 #include <netinet/tcp.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <errno.h>
+#include <fcntl.h>
+
+#define CONNECT_TIMEOUT_SEC 3
 
 const char *Net_ErrorString( void ) {
 	return strerror( errno );
@@ -97,6 +101,12 @@ lsocket Net_Accept( lsocket sock ) {
 int Net_Connect( lsocket sock, const char *host, u16 port ) {
 	struct sockaddr_in addr;
 	struct hostent *h;
+	int flags;
+	int result;
+	fd_set writefds;
+	struct timeval timeout;
+	int so_error;
+	socklen_t len;
 
 	memset( &addr, 0, sizeof( addr ) );
 
@@ -109,17 +119,64 @@ int Net_Connect( lsocket sock, const char *host, u16 port ) {
 	if ( addr.sin_addr.s_addr == INADDR_NONE ) {
 		h = gethostbyname( host );
 		if ( !h ) {
-			Com_Printf( "ERROR: Net_Connect: couldn't resolve %s\n", host );
 			return ( -1 );
 		}
-        
+
 		addr.sin_addr = *(struct in_addr *)h->h_addr_list[0];
 	}
 
-	if ( connect( sock, (struct sockaddr *)&addr, sizeof( addr ) ) == -1 ) {
-		Com_Printf( "ERROR: Net_Connect: %s\n", Net_ErrorString() );
+	// Set socket to non-blocking mode
+	flags = fcntl( sock, F_GETFL, 0 );
+	if ( flags == -1 ) {
 		return ( -1 );
 	}
+	if ( fcntl( sock, F_SETFL, flags | O_NONBLOCK ) == -1 ) {
+		return ( -1 );
+	}
+
+	// Attempt to connect (will return immediately)
+	result = connect( sock, (struct sockaddr *)&addr, sizeof( addr ) );
+
+	if ( result == -1 ) {
+		if ( errno != EINPROGRESS ) {
+			// Real error, not just "in progress"
+			fcntl( sock, F_SETFL, flags ); // Restore blocking mode
+			return ( -1 );
+		}
+
+		// Connection in progress, wait with timeout
+		FD_ZERO( &writefds );
+		FD_SET( sock, &writefds );
+
+		timeout.tv_sec = CONNECT_TIMEOUT_SEC;
+		timeout.tv_usec = 0;
+
+		result = select( sock + 1, NULL, &writefds, NULL, &timeout );
+
+		if ( result <= 0 ) {
+			// Timeout or error
+			fcntl( sock, F_SETFL, flags ); // Restore blocking mode
+			errno = ETIMEDOUT;
+			return ( -1 );
+		}
+
+		// Check if connection actually succeeded
+		len = sizeof( so_error );
+		if ( getsockopt( sock, SOL_SOCKET, SO_ERROR, &so_error, &len ) == -1 ) {
+			fcntl( sock, F_SETFL, flags );
+			return ( -1 );
+		}
+
+		if ( so_error != 0 ) {
+			// Connection failed
+			fcntl( sock, F_SETFL, flags );
+			errno = so_error;
+			return ( -1 );
+		}
+	}
+
+	// Restore socket to blocking mode
+	fcntl( sock, F_SETFL, flags );
 
 	return ( 0 );
 }

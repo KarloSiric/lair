@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-25 09:59:38
    Last Modified by: ksiric
-   Last Modified: 2026-03-13 11:44:54
+   Last Modified: 2026-03-14 11:46:38
    ---------------------------------------------------------------------
    Description:
 
@@ -36,6 +36,8 @@ static lboolean tui_running = lfalse;
 static lboolean show_quit_prompt = lfalse;
 
 static lboolean show_name_error = lfalse;
+static char connect_error[256];
+static lboolean show_connect_error = lfalse;
 
 static char chat_input[512];
 static size_t chat_input_len;
@@ -160,6 +162,12 @@ void TUI_Shutdown( void ) {
 	tui_running = lfalse;
 
 	return;
+}
+
+void TUI_Quit( void ) {
+    tui_running = lfalse;
+    
+    return ;
 }
 
 void TUI_DrawStatusBar( void ) {
@@ -405,17 +413,17 @@ void TUI_DrawConnectScreen( void ) {
 	TUI_DrawDoubleBox( connect_win, 0, 0, CONNECT_WIN_HEIGHT, CONNECT_WIN_WIDTH );
 	wattroff( connect_win, COLOR_PAIR( COL_DIALOG_BORDER ) );
 
-	// Title in bold white
+	// Title in bold white (centered for 52-width window)
 	wattron( connect_win, COLOR_PAIR( COL_DIALOG_TITLE ) | A_BOLD );
-	mvwprintw( connect_win, 2, 8, "W E L C O M E   T O " );
-	mvwprintw( connect_win, 3, 14, "L A I R " );
+	mvwprintw( connect_win, 2, 12, "W E L C O M E   T O " );
+	mvwprintw( connect_win, 3, 18, "L A I R " );
 	wattroff( connect_win, COLOR_PAIR( COL_DIALOG_TITLE ) | A_BOLD );
 
 	// Server field
 	wattron( connect_win, COLOR_PAIR( COL_CHAT_SELF ) );
 	mvwprintw( connect_win, 5, 4, "Server:" );
 	wattroff( connect_win, COLOR_PAIR( COL_CHAT_SELF ) );
-	mvwprintw( connect_win, 5, 12, "[                        ]" );
+	mvwprintw( connect_win, 5, 12, "[                              ]" );
 	mvwprintw( connect_win, 5, 13, "%s", connect_ip );
 
 	// Port field
@@ -427,20 +435,27 @@ void TUI_DrawConnectScreen( void ) {
 
 	// Highlight active field with color
 	if ( connect_field == 0 ) {
-		mvwchgat( connect_win, 5, 12, 26, A_REVERSE, COL_FIELD_ACTIVE, NULL );
+		mvwchgat( connect_win, 5, 12, 32, A_REVERSE, COL_FIELD_ACTIVE, NULL );
 	} else {
 		mvwchgat( connect_win, 7, 12, 10, A_REVERSE, COL_FIELD_ACTIVE, NULL );
 	}
 
-	// Connect button
+	// Connect button (centered for 52-width window)
 	wattron( connect_win, A_BOLD );
-	mvwprintw( connect_win, 9, 15, "[ CONNECT ]" );
+	mvwprintw( connect_win, 9, 19, "[ CONNECT ]" );
 	wattroff( connect_win, A_BOLD );
 
 	// Help text in dim
 	wattron( connect_win, COLOR_PAIR( COL_CHAT_TIMESTAMP ) );
 	mvwprintw( connect_win, 11, 4, "TAB: switch   ENTER: connect" );
 	wattroff( connect_win, COLOR_PAIR( COL_CHAT_TIMESTAMP ) );
+
+	// Show connection error if any
+	if ( show_connect_error && connect_error[0] != '\0' ) {
+		wattron( connect_win, COLOR_PAIR( COL_ERROR ) | A_BOLD );
+		mvwprintw( connect_win, 12, 3, "%.46s", connect_error );
+		wattroff( connect_win, COLOR_PAIR( COL_ERROR ) | A_BOLD );
+	}
 
 	wrefresh( connect_win );
 
@@ -464,11 +479,14 @@ void TUI_HandleConnectScreenInput( void ) {
 		show_quit_prompt = ltrue;
 		return;
 	} else if ( ch == '\n' || ch == KEY_ENTER ) {
+		show_connect_error = lfalse;
+		connect_error[0] = '\0';
 		CL_Connect( connect_ip, atoi( connect_port ) );
 		if ( cl.connected ) {
 			tui_state = STATE_NAME;
 		}
 	} else if ( ch == KEY_BACKSPACE || ch == 127 ) {
+		show_connect_error = lfalse;
 		if ( connect_field == 0 ) {
 			len = strlen( connect_ip );
 			if ( len > 0 ) {
@@ -481,6 +499,7 @@ void TUI_HandleConnectScreenInput( void ) {
 			}
 		}
 	} else if ( ch >= 32 && ch <= 126 ) {
+		show_connect_error = lfalse;
 		if ( connect_field == 0 ) {
 			len = strlen( connect_ip );
 			if ( len < 63 ) {
@@ -688,13 +707,22 @@ lboolean TUI_Frame( void ) {
     		break;
     	}
     	case STATE_CHAT: {
-    		TUI_DrawStatusBar();
-    		TUI_DrawChatWindow();
-    		TUI_DrawInputLine();
-    		TUI_HandleInput();
-    		CL_Frame();
-    		break;
-    	}
+		// Check if connection was lost - return to connect screen
+		if ( !cl.connected ) {
+			tui_state = STATE_CONNECT;
+			username[0] = '\0';
+			chat_message_count = 0;
+			clear();
+			refresh();
+			break;
+		}
+		TUI_DrawStatusBar();
+		TUI_DrawChatWindow();
+		TUI_DrawInputLine();
+		TUI_HandleInput();
+		CL_Frame();
+		break;
+	}
 	}
 
 	return tui_running;
@@ -756,8 +784,15 @@ void TUI_AddMessage( displaytype_t type, const char *sender, const char *text ) 
 	chat_message_count++;
 }
 
-void TUI_AddErrorMessage(const char *text ) {
-    TUI_AddMessage( DISPLAY_ERROR , "[ERROR]", text );
+void TUI_AddErrorMessage( const char *text ) {
+	// If we're in connect state, show error in connect dialog
+	if ( tui_state == STATE_CONNECT ) {
+		strncpy( connect_error, text, sizeof( connect_error ) - 1 );
+		connect_error[sizeof( connect_error ) - 1] = '\0';
+		show_connect_error = ltrue;
+	} else {
+		TUI_AddMessage( DISPLAY_ERROR, "[ERROR]", text );
+	}
 }
 
 void TUI_AddSystemMessage( const char *text ) {

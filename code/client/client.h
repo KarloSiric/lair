@@ -24,9 +24,7 @@ typedef struct {
 
 
 typedef void ( *chatcallback_t )( const char *sender, const char *text );           // Function pointer for sending chat messages to the TUI display form
-
 typedef void ( *msgcallback_t )( const char *text );
-
 
 extern chatcallback_t      CL_ChatCallback;
 

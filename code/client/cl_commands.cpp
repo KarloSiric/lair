@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-03-11 18:17:09
    Last Modified by: ksiric
-   Last Modified: 2026-03-13 11:35:07
+   Last Modified: 2026-03-14 11:46:57
    ---------------------------------------------------------------------
    Description:
        
@@ -17,6 +17,7 @@
 
 #include "client.h"
 #include "cmd.h"
+#include "tui.h"
 #include <stdio.h>
 
 internal void Cmd_Connect_f( void ) {
@@ -79,6 +80,7 @@ internal void Cmd_Quit_f( void ) {
     }
     
     CL_Shutdown();
+    TUI_Quit();
     
     return ;
 }
