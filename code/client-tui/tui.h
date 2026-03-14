@@ -115,6 +115,10 @@ void TUI_DrawTabBars();
 void TUI_DrawInputLine();
 void TUI_DrawChatWindow();
 
+void TUI_DrawPrivateWindow();
+void TUI_DrawFriendsWindow();
+void TUI_DrawSettingsWindow();
+
 void TUI_DrawConnectScreen();
 void TUI_HandleConnectScreenInput();
 

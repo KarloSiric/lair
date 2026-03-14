@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-25 09:59:38
    Last Modified by: ksiric
-   Last Modified: 2026-03-14 20:49:25
+   Last Modified: 2026-03-14 21:04:24
    ---------------------------------------------------------------------
    Description:
 
@@ -132,11 +132,14 @@ void TUI_HandleResize( void ) {
 	int name_x = ( cols - NAME_WIN_WIDTH ) / 2;
 
 	status_win = newwin( 1, cols, 0, 0 );
-	chat_win = newwin( rows - 2, cols, 1, 0 );
+    tab_win = newwin( 1, cols, 1, 0 );
+	chat_win = newwin( rows - 3, cols, 2, 0 );
 	input_win = newwin( 1, cols, rows - 1, 0 );
 	keypad( input_win, TRUE );
-	wtimeout( input_win, 50 );
-
+    keypad( tab_win, TRUE );
+	wtimeout( tab_win, 50 );
+    wtimeout( input_win, 50 );
+    
 	connect_win = newwin( CONNECT_WIN_HEIGHT, CONNECT_WIN_WIDTH, con_y, con_x );
 	keypad( connect_win, TRUE );
 	wtimeout( connect_win, 50 );
@@ -425,6 +428,38 @@ void TUI_DrawChatWindow( void ) {
 	wrefresh( chat_win );
 	return;
 }
+
+void TUI_DrawPrivateWindow( void ) {
+    int private_chat_h, private_chat_w;
+    getmaxyx( chat_win, private_chat_h, private_chat_w );
+    werase( chat_win );
+    
+    wattron( chat_win, COLOR_PAIR( COL_DIALOG_BORDER ) );
+    TUI_DrawDoubleBox( chat_win, 0, 0, private_chat_h, private_chat_w );
+    wattroff( chat_win, COLOR_PAIR( COL_DIALOG_BORDER ) );
+    
+    mvwprintw( chat_win, 1, 2, "PRIVATE MESSAGES" );
+    mvwprintw( chat_win, 1, 2, "Coming soon..." );
+    
+    wrefresh( chat_win );
+    
+    return ;
+}
+
+void TUI_DrawFriendsWindow( void ) {
+    
+    // @NOTE(KARLO): Adding friends window 
+    
+    return ;
+}
+
+void TUI_DrawSettingsWindow( void ) {
+    
+    // @NOTE(KARLO): Adding settings window 
+    
+    return ;
+}
+
 
 lboolean TUI_HandleInput( void ) {
 	int ch = wgetch( input_win );
@@ -796,11 +831,11 @@ lboolean TUI_Frame( void ) {
                 break;    
             }
             case TAB_FRIENDS: {
-                TUI_DrawPrivateWindow();
+                TUI_DrawFriendsWindow();
                 break;    
             }
             case TAB_SETTINGS: {
-                TUI_DrawPrivateWindow();
+                TUI_DrawSettingsWindow();
                 break;    
             }
         }
