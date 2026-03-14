@@ -78,6 +78,13 @@ TUI STATE
 */
 
 typedef enum {
+    TAB_CHAT,
+    TAB_PRIVATE,
+    TAB_FRIENDS,
+    TAB_SETTINGS
+} tuitab_t;
+
+typedef enum {
     STATE_CONNECT,
     STATE_NAME,
     STATE_CHAT
@@ -104,6 +111,7 @@ void TUI_InitColors( void );
 void TUI_DrawDoubleBox( WINDOW *win, int starty, int startx, int height, int width );
 
 void TUI_DrawStatusBar();
+void TUI_DrawTabBars();
 void TUI_DrawInputLine();
 void TUI_DrawChatWindow();
 

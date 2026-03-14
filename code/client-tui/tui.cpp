@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-25 09:59:38
    Last Modified by: ksiric
-   Last Modified: 2026-03-14 11:46:38
+   Last Modified: 2026-03-14 20:01:37
    ---------------------------------------------------------------------
    Description:
 
@@ -24,6 +24,7 @@ static int rows;
 static int cols;
 
 static tuistate_t tui_state = STATE_CONNECT;
+static tuitab_t current_tui_tab = TAB_CHAT;
 
 static char connect_ip[64];
 static char connect_port[8];
@@ -54,6 +55,7 @@ static WINDOW *input_win;
 static WINDOW *connect_win;
 static WINDOW *quit_win;
 static WINDOW *name_win;
+static WINDOW *tab_win;
 
 void TUI_Init( void ) {
 	initscr(); // initializing the ncurses library
@@ -76,7 +78,8 @@ void TUI_Init( void ) {
 	int name_x = ( cols - NAME_WIN_WIDTH ) / 2;
 
 	status_win = newwin( 1, cols, 0, 0 ); // status window creation
-	chat_win = newwin( rows - 2, cols, 1, 0 ); // chat window creation
+    tab_win = newwin( 1, cols, 1, 0 );    // drawing the tabs  
+	chat_win = newwin( rows - 3, cols, 2, 0 ); // chat window creation
 	input_win = newwin( 1, cols, rows - 1, 0 ); // input window creation
 	keypad( input_win, TRUE );
 	wtimeout( input_win, 50 );
@@ -189,6 +192,36 @@ void TUI_DrawStatusBar( void ) {
 	wattroff( status_win, COLOR_PAIR( COL_STATUS_BAR ) | A_BOLD );
 	wrefresh( status_win );
 	return;
+}
+
+void TUI_DrawTabBars( void ) {
+    werase( tab_win );
+    
+    if ( current_tui_tab == TAB_CHAT ) {
+        wattron( tab_win, COLOR_PAIR( COL_BUTTON_SELECTED ) );
+    } else {
+        wattron( tab_win, COLOR_PAIR( COL_DIALOG_BORDER ) );
+    }
+    
+    mvwprintw( tab_win, 0, 2, "[ CHAT ]" );
+    
+    if ( current_tui_tab == TAB_CHAT ) {
+        wattroff( tab_win, COLOR_PAIR( COL_BUTTON_SELECTED ) );
+    } else {
+        wattroff( tab_win, COLOR_PAIR( COL_DIALOG_BORDER ) );
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    return ;
 }
 
 void TUI_DrawInputLine( void ) {
