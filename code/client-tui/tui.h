@@ -78,7 +78,7 @@ TUI STATE
 */
 
 typedef enum {
-    TAB_CHAT,
+    TAB_CHAT = 0,
     TAB_PRIVATE,
     TAB_FRIENDS,
     TAB_SETTINGS

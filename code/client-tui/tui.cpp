@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-25 09:59:38
    Last Modified by: ksiric
-   Last Modified: 2026-03-14 20:01:37
+   Last Modified: 2026-03-14 20:49:25
    ---------------------------------------------------------------------
    Description:
 
@@ -117,6 +117,7 @@ void TUI_HandleResize( void ) {
 
 	// Recreate all windows with new dimensions
 	delwin( status_win );
+    delwin( tab_win );
 	delwin( chat_win );
 	delwin( input_win );
 	delwin( connect_win );
@@ -157,6 +158,7 @@ void TUI_HandleResize( void ) {
 
 void TUI_Shutdown( void ) {
 	delwin( status_win );
+    delwin( tab_win );
 	delwin( chat_win );
 	delwin( input_win );
 	endwin();
@@ -197,30 +199,53 @@ void TUI_DrawStatusBar( void ) {
 void TUI_DrawTabBars( void ) {
     werase( tab_win );
     
+    // @NOTE(KARLO): DRAWING CHAT TAB WINDOW
     if ( current_tui_tab == TAB_CHAT ) {
         wattron( tab_win, COLOR_PAIR( COL_BUTTON_SELECTED ) );
-    } else {
-        wattron( tab_win, COLOR_PAIR( COL_DIALOG_BORDER ) );
-    }
-    
-    mvwprintw( tab_win, 0, 2, "[ CHAT ]" );
-    
-    if ( current_tui_tab == TAB_CHAT ) {
+        mvwprintw( tab_win, 0, 2, "[ CHAT ]" );
         wattroff( tab_win, COLOR_PAIR( COL_BUTTON_SELECTED ) );
     } else {
+        wattron( tab_win, COLOR_PAIR( COL_DIALOG_BORDER ) );
+        mvwprintw( tab_win, 0, 2, "[ CHAT ]" );
+        wattroff( tab_win, COLOR_PAIR( COL_DIALOG_BORDER ) );
+    }
+    // @NOTE(KARLO): DRAWING PRIVATE TAB WINDOW
+    
+    if ( current_tui_tab == TAB_PRIVATE ) {
+        wattron( tab_win, COLOR_PAIR( COL_BUTTON_SELECTED ) );
+        mvwprintw( tab_win, 0, 12, "[ PRIVATE ]" );
+        wattroff( tab_win, COLOR_PAIR( COL_BUTTON_SELECTED ) );
+    } else {
+        wattron( tab_win, COLOR_PAIR( COL_DIALOG_BORDER ) );
+        mvwprintw( tab_win, 0, 12, "[ PRIVATE ]" );
         wattroff( tab_win, COLOR_PAIR( COL_DIALOG_BORDER ) );
     }
     
+    // @NOTE(KARLO): DRAWING FRIENDS TAB WINDOW
+
+    if ( current_tui_tab == TAB_FRIENDS ) {
+        wattron( tab_win, COLOR_PAIR( COL_BUTTON_SELECTED ) );
+        mvwprintw( tab_win, 0, 24, "[ FRIENDS ]" );
+        wattroff( tab_win, COLOR_PAIR( COL_BUTTON_SELECTED ) );
+    } else {
+        wattron( tab_win, COLOR_PAIR( COL_DIALOG_BORDER ) );
+        mvwprintw( tab_win, 0, 24, "[ FRIENDS ]" );
+        wattroff( tab_win, COLOR_PAIR( COL_DIALOG_BORDER ) );
+    }
     
+    // @NOTE(KARLO): DRAWING CONFIG/SETTINGS TAB WINDOW
     
+    if ( current_tui_tab == TAB_SETTINGS ) {
+        wattron( tab_win, COLOR_PAIR( COL_BUTTON_SELECTED ) );
+        mvwprintw( tab_win, 0, 36, "[ SETTINGS ]" );
+        wattroff( tab_win, COLOR_PAIR( COL_BUTTON_SELECTED ) );
+    } else {
+        wattron( tab_win, COLOR_PAIR( COL_DIALOG_BORDER ) );
+        mvwprintw( tab_win, 0, 36, "[ SETTINGS ]" );
+        wattroff( tab_win, COLOR_PAIR( COL_DIALOG_BORDER ) );
+    }
     
-    
-    
-    
-    
-    
-    
-    
+    wrefresh( tab_win );
     return ;
 }
 
@@ -406,6 +431,14 @@ lboolean TUI_HandleInput( void ) {
 	if ( ch == ERR ) {
 		return ltrue;
 	}
+    if ( ch == '\t' ) {
+        current_tui_tab = ( tuitab_t )( ( current_tui_tab + 1 ) % 4 );
+        return ltrue;
+    }
+    if ( ch == KEY_BTAB ) {
+        current_tui_tab = ( tuitab_t )( ( current_tui_tab + 3 ) % 4 );
+        return ltrue;
+    }
 	if ( ch == 27 ) {
 		show_quit_prompt = ltrue;
 		return ltrue;
@@ -749,8 +782,28 @@ lboolean TUI_Frame( void ) {
 			refresh();
 			break;
 		}
+        
 		TUI_DrawStatusBar();
-		TUI_DrawChatWindow();
+        TUI_DrawTabBars();
+        // @NOTE(KARLO): Here we need to draw the windows depending on the current_tui_tab enum number
+        switch( current_tui_tab ) {
+            case TAB_CHAT: {
+                TUI_DrawChatWindow();
+                break;
+            }
+            case TAB_PRIVATE: {
+                TUI_DrawPrivateWindow();
+                break;    
+            }
+            case TAB_FRIENDS: {
+                TUI_DrawPrivateWindow();
+                break;    
+            }
+            case TAB_SETTINGS: {
+                TUI_DrawPrivateWindow();
+                break;    
+            }
+        }
 		TUI_DrawInputLine();
 		TUI_HandleInput();
 		CL_Frame();
