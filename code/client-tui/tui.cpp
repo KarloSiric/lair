@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-25 09:59:38
    Last Modified by: ksiric
-   Last Modified: 2026-03-14 21:04:24
+   Last Modified: 2026-03-14 21:17:28
    ---------------------------------------------------------------------
    Description:
 
@@ -439,7 +439,7 @@ void TUI_DrawPrivateWindow( void ) {
     wattroff( chat_win, COLOR_PAIR( COL_DIALOG_BORDER ) );
     
     mvwprintw( chat_win, 1, 2, "PRIVATE MESSAGES" );
-    mvwprintw( chat_win, 1, 2, "Coming soon..." );
+    mvwprintw( chat_win, 3, 2, "Coming soon..." );
     
     wrefresh( chat_win );
     
@@ -449,6 +449,18 @@ void TUI_DrawPrivateWindow( void ) {
 void TUI_DrawFriendsWindow( void ) {
     
     // @NOTE(KARLO): Adding friends window 
+    int friends_chat_h, friends_chat_w;
+    getmaxyx( chat_win, friends_chat_h, friends_chat_w );
+    werase( chat_win );
+    
+    wattron( chat_win, COLOR_PAIR( COL_DIALOG_BORDER ) );
+    TUI_DrawDoubleBox( chat_win, 0, 0, friends_chat_h, friends_chat_w );
+    wattroff( chat_win, COLOR_PAIR( COL_DIALOG_BORDER ) );
+    
+    mvwprintw( chat_win, 1, 2, "FRIENDS LIST" );
+    mvwprintw( chat_win, 3, 2, "Coming soon..." );
+    
+    wrefresh( chat_win );
     
     return ;
 }
@@ -456,6 +468,18 @@ void TUI_DrawFriendsWindow( void ) {
 void TUI_DrawSettingsWindow( void ) {
     
     // @NOTE(KARLO): Adding settings window 
+    int settings_chat_h, settings_chat_w;
+    getmaxyx( chat_win, settings_chat_h, settings_chat_w );
+    werase( chat_win );
+    
+    wattron( chat_win, COLOR_PAIR( COL_DIALOG_BORDER ) );
+    TUI_DrawDoubleBox( chat_win, 0, 0, settings_chat_h, settings_chat_w );
+    wattroff( chat_win, COLOR_PAIR( COL_DIALOG_BORDER ) );
+    
+    mvwprintw( chat_win, 1, 2, "SETTINGS" );
+    mvwprintw( chat_win, 3, 2, "Coming soon..." );
+    
+    wrefresh( chat_win );
     
     return ;
 }
