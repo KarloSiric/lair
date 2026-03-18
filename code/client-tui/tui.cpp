@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-25 09:59:38
    Last Modified by: ksiric
-   Last Modified: 2026-03-14 21:17:28
+   Last Modified: 2026-03-18 14:00:00
    ---------------------------------------------------------------------
    Description:
 
@@ -101,6 +101,9 @@ void TUI_Init( void ) {
 	// Initializing the chat input and all
 	chat_input[0] = '\0';
 	chat_input_len = 0;
+    
+    // @NOTE(KARLO): Enabling mouse scroll
+    mousemask( ALL_MOUSE_EVENTS, NULL );
 
 	tui_running = ltrue;
 	refresh();
@@ -498,6 +501,22 @@ lboolean TUI_HandleInput( void ) {
         current_tui_tab = ( tuitab_t )( ( current_tui_tab + 3 ) % 4 );
         return ltrue;
     }
+    // @NOTE(KARLO): Enabling checking for the mouse wheel
+    if ( ch == KEY_MOUSE ) {
+        MEVENT event;
+        if ( getmouse( &event ) == OK ) {
+            if ( event.bstate & BUTTON4_PRESSED ) {
+                // @TODO(KARLO): showing older messages
+                
+            } 
+            if ( event.bstate & BUTTON5_PRESSED ) {
+                // @TODO(KARLO): showing new messages
+                
+                
+            }
+        }
+    }
+    
 	if ( ch == 27 ) {
 		show_quit_prompt = ltrue;
 		return ltrue;
