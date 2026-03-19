@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-17 01:17:55
    Last Modified by: ksiric
-   Last Modified: 2026-03-19 10:08:35
+   Last Modified: 2026-03-19 10:09:00
    ---------------------------------------------------------------------
    Description:
 
@@ -144,7 +144,7 @@ void CL_SendDisconnect( void ) {
 	MSG_Init( &msg, buf, sizeof( buf ) );
 	MSG_WriteByte( &msg, MSG_DISCONNECT );
 
-    Net_Send( cl.socket, msg.data, msg.cursize );
+	Net_Send( cl.socket, msg.data, msg.cursize );
 }
 
 void CL_ReadServerMessages( void ) {
@@ -199,7 +199,7 @@ void CL_ReadServerMessages( void ) {
 	}
 
 	case MSG_CHAT: {
-		int  fromid = MSG_ReadByte( &msg );
+		int fromid = MSG_ReadByte( &msg );
 		char name[MAX_USERNAME];
 		char text[MAX_STRING_CHARS];
 
@@ -209,7 +209,7 @@ void CL_ReadServerMessages( void ) {
 		strncpy( text, MSG_ReadString( &msg ), MAX_STRING_CHARS - 1 );
 		text[MAX_STRING_CHARS - 1] = '\0';
 
-    	if ( CL_ChatCallback ) {
+		if ( CL_ChatCallback ) {
 			CL_ChatCallback( name, text );
 		} else {
 			Com_Printf( "~%s: %s\n", name, text );
