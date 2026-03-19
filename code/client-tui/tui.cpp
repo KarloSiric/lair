@@ -4,7 +4,7 @@
    Author: ksiric <email@example.com>
    Created: 2026-02-25 09:59:38
    Last Modified by: ksiric
-   Last Modified: 2026-03-18 14:00:00
+   Last Modified: 2026-03-18 15:16:45
    ---------------------------------------------------------------------
    Description:
 
@@ -45,6 +45,8 @@ static size_t chat_input_len;
 
 static chatmsg_t chat_messages[MAX_CHAT_MESSAGES];
 static int chat_message_count = 0;
+static int chat_scroll_offset = 0;
+static int chat_max_scroll = 0;
 
 static lboolean colors_initialized = lfalse;
 
@@ -101,9 +103,6 @@ void TUI_Init( void ) {
 	// Initializing the chat input and all
 	chat_input[0] = '\0';
 	chat_input_len = 0;
-    
-    // @NOTE(KARLO): Enabling mouse scroll
-    mousemask( ALL_MOUSE_EVENTS, NULL );
 
 	tui_running = ltrue;
 	refresh();
@@ -304,7 +303,17 @@ void TUI_DrawChatWindow( void ) {
 	}
 
 	int lines_to_skip = ( total_lines_needed > max_lines ) ? total_lines_needed - max_lines : 0;
-
+    lines_to_skip -= chat_scroll_offset;
+    if ( lines_to_skip < 0 ) {
+        lines_to_skip = 0;
+    }
+    
+    chat_max_scroll = total_lines_needed - max_lines;
+    
+    if ( chat_max_scroll < 0 ) {
+        chat_max_scroll = 0;
+    }
+    
 	// Draw messages with word wrapping
 	for ( int i = 0; i < chat_message_count && line < win_h - 1; i++ ) {
 		msg = &chat_messages[i];
@@ -325,7 +334,8 @@ void TUI_DrawChatWindow( void ) {
 		if ( lines_to_skip >= msg_lines ) {
 			lines_to_skip -= msg_lines;
 			continue;
-		}
+		} 
+        
         
         wattron( chat_win, COLOR_PAIR( COL_CHAT_TIMESTAMP ) );
         mvwprintw( chat_win, line, 2, "%s ", msg->timestamp );
@@ -487,7 +497,6 @@ void TUI_DrawSettingsWindow( void ) {
     return ;
 }
 
-
 lboolean TUI_HandleInput( void ) {
 	int ch = wgetch( input_win );
 	if ( ch == ERR ) {
@@ -497,26 +506,28 @@ lboolean TUI_HandleInput( void ) {
         current_tui_tab = ( tuitab_t )( ( current_tui_tab + 1 ) % 4 );
         return ltrue;
     }
-    if ( ch == KEY_BTAB ) {
+    if ( ch == KEY_BTAB ) {       
         current_tui_tab = ( tuitab_t )( ( current_tui_tab + 3 ) % 4 );
         return ltrue;
     }
-    // @NOTE(KARLO): Enabling checking for the mouse wheel
-    if ( ch == KEY_MOUSE ) {
-        MEVENT event;
-        if ( getmouse( &event ) == OK ) {
-            if ( event.bstate & BUTTON4_PRESSED ) {
-                // @TODO(KARLO): showing older messages
-                
-            } 
-            if ( event.bstate & BUTTON5_PRESSED ) {
-                // @TODO(KARLO): showing new messages
-                
-                
+    // @NOTE(KARLO): Adding support for scrolling using keyboard
+    if ( ch == 4 ) {        // Ctrl + D -> up scrolling
+        if ( chat_max_scroll > 0 && chat_scroll_offset < chat_max_scroll ) {
+            chat_scroll_offset += 5;       
+            if ( chat_scroll_offset > chat_max_scroll ) {
+                chat_scroll_offset = chat_max_scroll;
             }
         }
+        return ltrue;
     }
-    
+    if ( ch == 21 ) {      // Ctrl + U -> up scrolling 
+        chat_scroll_offset -= 5;
+        // Need to wrap it up here for safety
+        if ( chat_scroll_offset < 0 ) {
+            chat_scroll_offset = 0;
+        }
+        return ltrue;
+    }
 	if ( ch == 27 ) {
 		show_quit_prompt = ltrue;
 		return ltrue;
@@ -944,7 +955,8 @@ void TUI_AddMessage( displaytype_t type, const char *sender, const char *text ) 
 	now = time( NULL );
 	t = localtime( &now );
 	snprintf( msg->timestamp, sizeof( msg->timestamp ), "[%02d:%02d:%02d]", t->tm_hour, t->tm_min, t->tm_sec );
-
+    
+    chat_scroll_offset = 0;
 	chat_message_count++;
 }
 
