@@ -14,7 +14,19 @@ This project implements real-time text chat over TCP with a custom binary protoc
 
 ## Screenshots
 
-<!-- Add screenshots here -->
+![Connection Screen](assets/screen1.png)
+
+![Username Entry](assets/screen2.png)
+
+![Chat Interface](assets/screen3.png)
+
+![Active Chat Session](assets/screen4.png)
+
+![Multi-User Chat](assets/screen5.png)
+
+![System Messages](assets/screen6.png)
+
+![Server Console](assets/screen7.png)
 
 ---
 
