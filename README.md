@@ -2,74 +2,108 @@
 
 Lightweight, self-hosted voice and text chat application.
 
-LAIR is a cross-platform communication system inspired by the networking architecture of id Software's Quake III Arena. It provides real-time text chat with planned support for voice communication over UDP.
+---
+
+## Overview
+
+LAIR is a cross-platform communication system built from the ground up in C++. The networking architecture and code conventions draw heavily from id Software's Quake III Arena — the same battle-tested patterns that powered online gaming for millions of players.
+
+This project implements real-time text chat over TCP with a custom binary protocol, extensible command system, and terminal-based interface. Voice communication over UDP and a Qt-based GUI are planned.
+
+---
+
+## Screenshots
+
+<!-- Add screenshots here -->
+
+---
 
 ## Features
 
-### Current
-- TCP-based text chat with multiple clients
-- Terminal User Interface (TUI) with ncurses
-- Tab-based navigation (Chat, Private Messages, Friends, Settings)
-- Command system with extensible architecture
-- Non-blocking network connections with timeout handling
-- Message types (Chat, System, Error) with color coding
-- Scrollable chat history
-- Terminal resize support
+### Current Implementation
+- Real-time TCP text chat supporting multiple concurrent clients
+- Custom binary message protocol with type-safe serialization
+- Terminal User Interface built on ncurses with Unicode box drawing
+- Tab-based navigation: Chat, Private Messages, Friends, Settings
+- Extensible command system with hash table lookups
+- Non-blocking network I/O with configurable timeouts
+- Color-coded message types: chat, system, error
+- Scrollable chat history with timestamp display
+- Dynamic terminal resize handling
+- Cross-platform socket abstraction (POSIX/Win32)
 
 ### Planned
-- UDP voice chat
-- Qt-based graphical user interface
+- UDP voice communication with Opus codec
+- Qt-based graphical interface (ImGui integration prepared)
 - End-to-end encryption
-- Private messaging
-- Friends list and presence system
-- Group/channel support
+- Private messaging system
+- Friends list with presence tracking
+- Channel/room support
 - User authentication and persistence
+- Server-side moderation tools
 
-## Building
+---
 
-### Requirements
-- C++11 compatible compiler
-- CMake 3.10 or higher
-- ncurses library (for TUI client)
-- POSIX-compliant operating system (Linux, macOS, BSD)
+## Architecture
 
-### Compilation
+LAIR follows a client-server model using TCP for reliable text delivery:
 
-```sh
-mkdir build
-cd build
-cmake ..
-make
+```
+                    ┌─────────────────────────────────────────┐
+                    │             lair_server                 │
+                    │  ┌───────────────────────────────────┐  │
+                    │  │         Client Manager            │  │
+                    │  │  ┌─────┐ ┌─────┐ ┌─────┐ ┌─────┐  │  │
+                    │  │  │ C0  │ │ C1  │ │ C2  │ │ ... │  │  │
+                    │  │  └──┬──┘ └──┬──┘ └──┬──┘ └──┬──┘  │  │
+                    │  └─────┼──────┼──────┼──────┼───────┘  │
+                    └────────┼──────┼──────┼──────┼──────────┘
+                             │      │      │      │
+                         TCP │      │      │      │
+                             │      │      │      │
+              ┌──────────────┴──────┴──────┴──────┴──────────────┐
+              │                                                  │
+     ┌────────┴────────┐                              ┌──────────┴────────┐
+     │   lair_client   │                              │    lair_client    │
+     │  ┌───────────┐  │                              │  ┌─────────────┐  │
+     │  │    TUI    │  │                              │  │   Qt GUI    │  │
+     │  │  ncurses  │  │                              │  │  (planned)  │  │
+     │  └───────────┘  │                              │  └─────────────┘  │
+     └─────────────────┘                              └───────────────────┘
 ```
 
-This produces two executables:
-- `lair_server` - The chat server
-- `lair_client` - The TUI chat client
+### Message Protocol
 
-## Usage
+Communication uses a compact binary protocol optimized for low overhead:
 
-### Starting the Server
-
-```sh
-./lair_server
+```
+┌──────────┬────────────────────────────────┐
+│  Byte 0  │  Bytes 1..N                    │
+├──────────┼────────────────────────────────┤
+│  Type    │  Type-specific payload         │
+└──────────┴────────────────────────────────┘
 ```
 
-The server listens on port 7331 by default.
+Message types include connection handshake, user management, text chat, channel operations, and voice data frames.
 
-### Starting the Client
+### Command System
 
-```sh
-./lair_client
-```
+The client implements an id Tech-style command system with:
+- Tokenizer for parsing command strings
+- Hash table for O(1) command lookups
+- Command buffer for queued execution
+- Extensible registration API
 
-On startup, enter the server address and port, then choose a username.
+---
+
+## Controls
 
 ### Client Commands
 
 | Command | Description |
 |---------|-------------|
 | `/connect <host> [port]` | Connect to a server |
-| `/disconnect` | Disconnect from server |
+| `/disconnect` | Disconnect from current server |
 | `/name <username>` | Set or change username |
 | `/users` | List connected users |
 | `/help` | Show available commands |
@@ -85,61 +119,153 @@ On startup, enter the server address and port, then choose a username.
 | `Ctrl+U` | Scroll down (newer messages) |
 | `Escape` | Quit prompt |
 
-## Architecture
+---
 
-LAIR follows a client-server model using TCP for reliable text communication:
+## System Requirements
 
+- **OS**: macOS, Linux, Windows
+- **Compiler**: C++17 compatible (GCC, Clang, MSVC)
+- **Build**: CMake 3.16+
+- **Dependencies**: ncurses (TUI client)
+
+---
+
+## Build Instructions
+
+### macOS
+
+```bash
+# Install dependencies
+brew install cmake ncurses
+
+# Build
+mkdir build && cd build
+cmake ..
+make
+
+# Run server
+./lair_server
+
+# Run client (separate terminal)
+./lair_client
 ```
-┌─────────────────┐     TCP      ┌─────────────────┐
-│   lair_client   │◄────────────►│   lair_server   │
-└─────────────────┘              └─────────────────┘
-        │                                │
-        │                                │
-   ┌────┴────┐                    ┌──────┴──────┐
-   │   TUI   │                    │   Clients   │
-   │ ncurses │                    │   Array     │
-   └─────────┘                    └─────────────┘
+
+### Linux (Debian/Ubuntu)
+
+```bash
+# Install dependencies
+sudo apt install build-essential cmake libncurses-dev
+
+# Build
+mkdir build && cd build
+cmake ..
+make
 ```
 
-### Code Structure
+### Linux (Arch)
+
+```bash
+# Install dependencies
+sudo pacman -S cmake ncurses
+
+# Build
+mkdir build && cd build
+cmake ..
+make
+```
+
+### Build Options
+
+```bash
+cmake -DLAIR_BUILD_SERVER=ON ..      # Build server (default: ON)
+cmake -DLAIR_BUILD_CLIENT_TUI=ON ..  # Build TUI client (default: ON)
+cmake -DLAIR_BUILD_CLIENT=OFF ..     # Build GUI client (default: OFF)
+```
+
+---
+
+## Project Structure
 
 ```
 lair/
 ├── code/
-│   ├── client/          # Client networking logic
-│   ├── client-tui/      # ncurses TUI implementation
-│   ├── server/          # Server implementation
-│   ├── lcommon/         # Shared utilities (msg, cmd, etc.)
-│   └── posix/           # Platform-specific networking
-├── deps/                # Third-party dependencies
-└── build/               # Build output
+│   ├── lcommon/        # Shared library
+│   │   ├── l_shared.h  # Type definitions and constants
+│   │   ├── msg.cpp/h   # Message serialization
+│   │   ├── cmd.cpp/h   # Command system
+│   │   └── common.cpp  # Utility functions
+│   ├── server/         # Server implementation
+│   │   ├── sv_main.cpp # Server main loop
+│   │   └── server.h    # Server structures
+│   ├── client/         # Client networking
+│   │   ├── cl_main.cpp # Client connection handling
+│   │   └── cl_commands.cpp
+│   ├── client-tui/     # ncurses interface
+│   │   ├── tui.cpp     # Terminal UI implementation
+│   │   └── tui.h       # UI state and drawing
+│   ├── posix/          # POSIX network/system layer
+│   └── win32/          # Windows network/system layer
+├── deps/
+│   ├── cjson/          # JSON parsing
+│   └── imgui/          # GUI toolkit (future)
+├── CMakeLists.txt
+└── LICENSE
 ```
 
-### Message Protocol
+---
 
-Communication uses a simple binary protocol:
-- First byte: message type
-- Remaining bytes: type-specific payload
+## Technical Details
 
-Message types include: `MSG_CONNECT`, `MSG_DISCONNECT`, `MSG_CHAT`, `MSG_USERJOIN`, `MSG_USERLEAVE`, etc.
+### Network Layer
+- Non-blocking sockets with select-based multiplexing
+- Configurable connection timeouts
+- Automatic reconnection handling
+- Platform abstraction for POSIX and Win32
 
-## Acknowledgments
+### Message Types
+- Connection: `CONNECT`, `CONNECT_ACCEPTED`, `CONNECT_DENIED`, `DISCONNECT`
+- Users: `USERJOIN`, `USERLEAVE`, `USERINFO`, `USERLIST`, `USERKICK`, `USERBAN`
+- Chat: `CHAT`, `CHAT_PRIVATE`, `CHAT_CHANNEL`, `CHAT_SERVER`
+- Channels: `CHANNELLIST`, `CHANNELJOIN`, `CHANNELLEAVE`, `CHANNELCREATE`
+- Voice: `VOICEDATA`, `VOICESTART`, `VOICESTOP` (planned)
 
-This project's architecture and coding conventions are heavily influenced by id Software's Quake III Arena source code release. The networking model, command system, and general code structure follow patterns established in that codebase.
+### Limits
+- Max clients: 256
+- Max message length: 4096 bytes
+- Max username: 32 characters
+- Default port: 7331
+
+---
+
+## Status
+
+Active development. Core text chat functionality complete. Voice and GUI in progress.
+
+---
 
 ## License
 
-This project is licensed under the GNU General Public License v2.0 - see the [LICENSE](LICENSE) file for details.
+GNU General Public License v2.0. See [LICENSE](LICENSE) for details.
 
-This license was chosen for compatibility with code patterns derived from Quake III Arena, which was released under GPL-2.0.
+This license was chosen for compatibility with code patterns derived from Quake III Arena.
+
+---
 
 ## Contributing
 
-Contributions are welcome. Please ensure your code follows the existing style:
+Contributions welcome. Follow the existing code style:
 - Tabs for indentation
 - Spaces around operators and after keywords
 - Opening braces on same line
 - Descriptive function and variable names
+
+---
+
+## Acknowledgments
+
+Architecture and conventions influenced by id Software's Quake III Arena source code release.
+
+---
 
 ## Author
 
