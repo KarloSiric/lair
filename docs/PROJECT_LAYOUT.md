@@ -2,49 +2,47 @@
 
 This is the target structure we will grow into while preserving the current working code.
 
-## Current state
+## Current structure in use
 
-The active implementation still lives under `code/`:
+The active implementation currently lives under `code/`:
 - `code/server/` server loop and TCP chat handling
-- `code/client/` network client and slash commands
+- `code/client/` network client and command system
 - `code/client-tui/` ncurses user interface
 - `code/lcommon/` shared protocol, command, and common utilities
 - `code/posix/` platform networking/system layer
 
-## Target structure
+## Target structure while staying in `code/`
 
-### `src/app/`
-- `client_qt/` Qt desktop entry point and application bootstrap
-- `client_tui/` future home for the maintained TUI app shell
-- `server/` future home for the production server bootstrap and runtime wiring
+### `code/client-qt/`
+- Qt desktop client entry point and bootstrap files
 
-### `src/core/`
+### `code/client-tui/`
+- Existing ncurses shell while we keep it as legacy or maintenance mode
+
+### `code/core/`
 - app services, domain models, room/session managers, shared business logic
 
-### `src/protocol/`
+### `code/protocol/`
 - TCP framing, packet encoding/decoding, versioning, transport contracts
 
-### `src/storage/`
+### `code/storage/`
 - SQLite/SQLCipher integration
 - repositories for users, sessions, rooms, messages, preferences cache
 
-### `src/security/`
+### `code/security/`
 - libsodium wrappers
 - password hashing, session tokens, key management, encryption helpers
 
-### `src/voice/`
+### `code/voice/`
 - Opus codec integration
 - UDP packetization, jitter buffering, voice session state
 - WebRTC audio processing hooks later
 
-### `src/ui/qt/`
-- Qt windows, widgets, models, dialogs, view models, themes
+### `code/ui/qt/`
+- Qt windows, widgets, models, dialogs, view models
 
-### `src/platform/`
-- future platform abstractions that are not tied to the legacy `code/posix` layout
-
-### `include/lair/`
-- stable public headers as modules mature
+### `code/platform/`
+- platform abstractions not tied to `code/posix`
 
 ### `tests/`
 - `unit/` fast tests for protocol, auth, storage, helpers
@@ -56,11 +54,11 @@ The active implementation still lives under `code/`:
 
 ## Build order we will follow
 
-1. Keep the current TCP chat path working.
-2. Add Qt client shell and begin migrating UI work there.
-3. Replace stream-unsafe TCP reads with proper framed messages.
-4. Add SQLite persistence and initial sync for users/history.
-5. Add authentication and sessions with libsodium.
-6. Add settings, preferences, and OS keychain integration.
-7. Add UDP voice with Opus.
-8. Add stronger transport security and local encryption layers.
+1. keep the current TCP chat path working.
+2. keep a minimal Qt shell and start moving UI work there.
+3. fix stream-safe TCP message parsing in protocol.
+4. add SQLite persistence and initial sync for users/history.
+5. add authentication and sessions with libsodium.
+6. add settings/preferences and OS keychain integration.
+7. add UDP voice with Opus.
+8. add transport and local security hardening.

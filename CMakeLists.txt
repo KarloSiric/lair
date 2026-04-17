@@ -21,7 +21,7 @@ add_library(lair_platform STATIC
 )
 target_include_directories(lair_platform PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/code/lcommon
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/code
 )
 set_target_properties(lair_platform PROPERTIES FOLDER "legacy")
 
@@ -32,7 +32,7 @@ add_library(lair_common STATIC
 )
 target_include_directories(lair_common PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/code/lcommon
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/code
 )
 target_link_libraries(lair_common PUBLIC lair_platform cjson)
 set_target_properties(lair_common PROPERTIES FOLDER "legacy")
@@ -40,8 +40,7 @@ set_target_properties(lair_common PROPERTIES FOLDER "legacy")
 add_library(lair_project_options INTERFACE)
 target_compile_features(lair_project_options INTERFACE cxx_std_17)
 target_include_directories(lair_project_options INTERFACE
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/code
 )
 
 if(LAIR_ENABLE_LOGGING AND TARGET spdlog::spdlog)
@@ -116,12 +115,11 @@ if(LAIR_BUILD_CLIENT_QT)
     qt_standard_project_setup()
 
     qt_add_executable(lair_qt_client
-        src/app/client_qt/main.cpp
-        src/ui/qt/main_window.cpp
+        code/client-qt/main.cpp
+        code/ui/qt/main_window.cpp
     )
     target_include_directories(lair_qt_client PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/src
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/code
     )
     target_link_libraries(lair_qt_client PRIVATE
         Qt6::Core
